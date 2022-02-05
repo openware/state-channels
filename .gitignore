@@ -1,0 +1,19 @@
+# Entries below this point are managed by Please (DO NOT EDIT)
+plz-out
+.plzconfig.local
+
+# Protobuf generated files
+*.pb.go
+*_pb.js
+*_pb.d.ts
+
+# Go Test Coverage
+cov.out
+
+# JS
+node_modules/
+trace.json
+tmp/
+.tags
+
+/.cache
