@@ -67,9 +67,6 @@ const config: HardhatUserConfig = {
   // },
   networks: {
     hardhat: {
-      accounts: {
-        mnemonic: 'open ware open ware open ware open ware open ware open ware',
-      },
       chainId: 1337,
     },
     ropsten: {
