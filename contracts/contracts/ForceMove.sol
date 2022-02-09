@@ -2,6 +2,7 @@
 pragma solidity 0.7.4;
 pragma experimental ABIEncoderV2;
 
+import { ECRecovery } from './libraries/ECRecovery.sol';
 import './interfaces/IForceMove.sol';
 import './interfaces/IForceMoveApp.sol';
 import './StatusManager.sol';
@@ -468,7 +469,7 @@ contract ForceMove is IForceMove, StatusManager {
      */
     function _recoverSigner(bytes32 _d, Signature memory sig) internal pure returns (address) {
         bytes32 prefixedHash = keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n32', _d));
-        address a = ecrecover(prefixedHash, sig.v, sig.r, sig.s);
+        address a = ECRecovery.recover(prefixedHash, sig.v, sig.r, sig.s);
         require(a != address(0), 'Invalid signature');
         return (a);
     }
