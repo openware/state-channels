@@ -8,4 +8,4 @@ require (
 
 )
 
-replace github.com/statechannels/go-nitro => github.com/openware/go-nitro v0.0.0-20220204134438-cc29b1c1935e
+replace github.com/statechannels/go-nitro => github.com/openware/go-nitro v0.0.0-20220208211451-08fb17e41fde
