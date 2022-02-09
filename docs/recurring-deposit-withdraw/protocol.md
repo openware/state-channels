@@ -87,9 +87,9 @@ While studying the protocol thoroughly, we made a cheat-sheet for all structures
 
 | Attack vector | How can be solved |
 | ------------- | ----------------- |
-| Finalize channel and withdraw funds specified in outcome as mine after parties refunded, <br> but I have not (during refunding) | Add "Refunding" channel mode, during which channel can't be finalized |
-| If funds during refunding are less than what is planned to be iteratively withdrown, <br> withdrawal during refunding could cause not all funds being paid to withdrowing party | Add "Refunding" channel mode, during which funds can't be iteratively withdrown |
-| Finalizing channel during withdrawal could cause not all parties to withdraw their funds | Add "Withdrawal" channel mode, during which channel can't be finalized |
+| Finalize channel and withdraw funds specified in outcome as mine after parties refunded, <br> but I have not (during refunding) | Add "Refunding" channel mode, during which channel can't be finalized <br> OR parties must NOT mark "isFinal: true" in state |
+| If funds during refunding are less than what is planned to be iteratively withdrown, <br> withdrawal during refunding could cause not all funds being paid to withdrowing party | Add "Refunding" channel mode, during which funds can't be iteratively withdrown <br> OR add "isWithdrawing: true" to state to iteratively withdraw funds |
+| Finalizing channel during withdrawal could cause not all parties to withdraw their funds | Add "Withdrawal" channel mode, during which channel can't be finalized <br> OR parties must mark "isWithdrawin: true" and NOT "isFinal: true" in state |
 
 ## Modifications
 
