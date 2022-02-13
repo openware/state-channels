@@ -3,10 +3,10 @@ package state
 import (
 	"app/models/broker"
 	"app/pkg/contract"
+
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/statechannels/go-nitro/channel"
 	"github.com/statechannels/go-nitro/channel/state"
 	"github.com/statechannels/go-nitro/channel/state/outcome"
 	"github.com/statechannels/go-nitro/types"
@@ -22,7 +22,7 @@ type ConcludeParams struct {
 }
 
 func Build(
-	chainID *big.Int,
+	chainID, channelNonce *big.Int,
 	assetAddress common.Address,
 	amountForBroker1, amountForBroker2 *big.Int,
 	broker1, broker2 *broker.Broker,
@@ -31,7 +31,7 @@ func Build(
 	state := state.State{
 		ChainId:           chainID,
 		Participants:      []types.Address{broker1.Address, broker2.Address},
-		ChannelNonce:      big.NewInt(0),
+		ChannelNonce:      channelNonce,
 		ChallengeDuration: big.NewInt(60),
 		AppData:           []byte{},
 		Outcome: outcome.Exit{
@@ -103,13 +103,4 @@ func BuildConcludeParams(s state.State, signature1, signature2 state.Signature) 
 	}
 
 	return params, nil
-}
-
-func Sign(c *channel.Channel, newState state.State, broker *broker.Broker) (state.Signature, error) {
-	signature, err := newState.Sign(broker.PrivateKey)
-	ok := c.AddStateWithSignature(newState, signature)
-	if err != nil && !ok {
-		return signature, err
-	}
-	return signature, nil
 }

@@ -6,6 +6,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/statechannels/go-nitro/channel"
+
+	"github.com/statechannels/go-nitro/channel/state"
 	typ "github.com/statechannels/go-nitro/types"
 )
 
@@ -37,4 +40,13 @@ func (b *Broker) SignTransaction(address common.Address, tx *types.Transaction) 
 	}
 
 	return tx.WithSignature(signer, signature)
+}
+
+func (b *Broker) SignState(c *channel.Channel, newState state.State) (state.Signature, error) {
+	signature, err := newState.Sign(b.PrivateKey)
+	ok := c.AddStateWithSignature(newState, signature)
+	if err != nil && !ok {
+		return signature, err
+	}
+	return signature, nil
 }

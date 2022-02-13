@@ -3,8 +3,9 @@ module app
 go 1.17
 
 require (
-	github.com/ethereum/go-ethereum v1.10.15
+	github.com/ethereum/go-ethereum v1.10.8
 	github.com/statechannels/go-nitro v0.0.0-20220204132611-5c628b3d2c8e
+	github.com/stretchr/testify v1.7.0
 
 )
 
