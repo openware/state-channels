@@ -2,15 +2,12 @@ package contract
 
 import (
 	"math/big"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
-
-var DefaultTimeout = 3 * time.Second
 
 type StateChannelContract interface {
 	Transfer(opts *bind.TransactOpts, assetIndex *big.Int, fromChannelId [32]byte, outcomeBytes []byte, stateHash [32]byte, indices []*big.Int) (*types.Transaction, error)
@@ -29,7 +26,7 @@ type StateChannelContract interface {
 
 type Client struct {
 	Contract StateChannelContract
-	ChainId  *big.Int
+	ChainID  *big.Int
 }
 
 func NewClient(contractAddr, rpcUrl string) (Client, error) {
@@ -51,6 +48,6 @@ func NewClient(contractAddr, rpcUrl string) (Client, error) {
 
 	return Client{
 		Contract: adjucator,
-		ChainId:  chainID,
+		ChainID:  chainID,
 	}, nil
 }

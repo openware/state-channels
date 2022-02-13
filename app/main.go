@@ -18,7 +18,7 @@ import (
 )
 
 var Broker1, Broker2 *broker.Broker
-var ChainId *big.Int
+var ChainID *big.Int
 var ContractAddress string
 
 var (
@@ -39,12 +39,12 @@ func main() {
 		panic(err)
 	}
 
-	vaultAccount, err := parser.FromFileToAccounts(mydir + "/../contracts/accounts.json")
+	vaultAccount, err := parser.ToVaultAccount(mydir + "/../contracts/accounts.json")
 	if err != nil {
 		panic(err)
 	}
 
-	contractObj, err := parser.FromFileToContract(mydir + "/../contracts/addresses.json")
+	contractObj, err := parser.ToContract(mydir + "/../contracts/addresses.json")
 	if err != nil {
 		panic(err)
 	}
@@ -68,12 +68,15 @@ func main() {
 	}
 
 	// STEP 3 - Get Chain ID from the client
-	ChainId = client.ChainId
-	fmt.Printf("Chain Id: %v\n", ChainId)
+	ChainID = client.ChainID
+	fmt.Printf("Chain Id: %v\n", ChainID)
 
 	// STEP 4 - Initialize pre fund state to sign
+	// This should be change later
+	// System can increase by 1 on every channel creation
+	channelNonce := big.NewInt(0)
 	preFundState := state.Build(
-		ChainId, AssetAddress,
+		ChainID, channelNonce, AssetAddress,
 		initialAmountForBroker1, initialAmountForBroker2,
 		Broker1, Broker2, false, 0,
 	)
@@ -86,13 +89,13 @@ func main() {
 	fmt.Printf("Channel ID: %+v \n", c.Id)
 
 	// STEP 6 - Sign prefund state by broker 1
-	signature1, err := state.Sign(&c, preFundState, Broker1)
+	signature1, err := Broker1.SignState(&c, preFundState)
 	if err != nil {
 		panic(err)
 	}
 
 	// STEP 7 - Sign prefund state by broker 2
-	signature2, err := state.Sign(&c, preFundState, Broker2)
+	signature2, err := Broker2.SignState(&c, preFundState)
 	if err != nil {
 		panic(err)
 	}
@@ -123,13 +126,13 @@ func main() {
 	}
 
 	// STEP 9 - Sign post fund state by broker 1
-	signature1, err = state.Sign(&c, c.PostFundState(), Broker1)
+	signature1, err = Broker1.SignState(&c, c.PostFundState())
 	if err != nil {
 		panic(err)
 	}
 
 	// STEP 10 - Sign post fund state by broker 2
-	signature2, err = state.Sign(&c, c.PostFundState(), Broker2)
+	signature2, err = Broker2.SignState(&c, c.PostFundState())
 	if err != nil {
 		panic(err)
 	}
@@ -148,7 +151,7 @@ func main() {
 
 			// Build new state
 			newState := state.Build(
-				ChainId, AssetAddress,
+				ChainID, channelNonce, AssetAddress,
 				initialAmountForBroker1, initialAmountForBroker2,
 				Broker1, Broker2, false, uint64(i),
 			)
@@ -156,7 +159,7 @@ func main() {
 			c.SignedStateForTurnNum[uint64(i)] = states.NewSignedState(newState)
 
 			// Sign state by broker1
-			signature1, err = state.Sign(&c, newState, Broker1)
+			signature1, err = Broker1.SignState(&c, newState)
 			if err != nil {
 				panic(err)
 			}
@@ -165,7 +168,7 @@ func main() {
 			fmt.Printf("State signed by Broker1: %v\n", c.CurrentStateSignedByMe(newState))
 
 			// Sign state by broker2
-			signature2, err = state.Sign(&c, newState, Broker2)
+			signature2, err = Broker2.SignState(&c, newState)
 			if err != nil {
 				panic(err)
 			}
@@ -178,19 +181,19 @@ func main() {
 	finalTurnNum := uint64(MaxTurnNum)
 
 	finalState := state.Build(
-		ChainId, AssetAddress,
+		ChainID, channelNonce, AssetAddress,
 		initialAmountForBroker1, initialAmountForBroker2,
 		Broker1, Broker2, true, finalTurnNum,
 	)
 
 	c.SignedStateForTurnNum[finalTurnNum] = states.NewSignedState(finalState)
 
-	signature1, err = state.Sign(&c, finalState, Broker1)
+	signature1, err = Broker1.SignState(&c, finalState)
 	if err != nil {
 		panic(err)
 	}
 
-	signature2, err = state.Sign(&c, finalState, Broker2)
+	signature2, err = Broker2.SignState(&c, finalState)
 	if err != nil {
 		panic(err)
 	}

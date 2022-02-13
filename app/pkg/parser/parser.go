@@ -6,16 +6,12 @@ import (
 	"os"
 )
 
-// VaultAccount struct which contains
-// an array of accounts
+// VaultAccount struct which contains an array of accounts with private keys and addresses
 type VaultAccount struct {
-	Accounts []Account `json:"accounts"`
-}
-
-// Account struct which contains private key and address
-type Account struct {
-	PrivateKey string `json:"privateKey"`
-	Address    string `json:"address"`
+	Accounts []struct {
+		PrivateKey string `json:"privateKey"`
+		Address    string `json:"address"`
+	} `json:"accounts"`
 }
 
 // Contract struct which contains chain ID and SC address
@@ -31,7 +27,7 @@ type Contract struct {
 	} `json:"1337"`
 }
 
-func FromFileToAccounts(file string) (VaultAccount, error) {
+func ToVaultAccount(file string) (VaultAccount, error) {
 	jsonFile, err := os.Open(file)
 	if err != nil {
 		return VaultAccount{}, nil
@@ -47,7 +43,7 @@ func FromFileToAccounts(file string) (VaultAccount, error) {
 	return accounts, nil
 }
 
-func FromFileToContract(file string) (Contract, error) {
+func ToContract(file string) (Contract, error) {
 	jsonFile, err := os.Open(file)
 	if err != nil {
 		return Contract{}, nil
