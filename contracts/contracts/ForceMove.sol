@@ -130,27 +130,25 @@ contract ForceMove is IForceMove, StatusManager {
         bytes32 channelId = _getChannelId(fixedPart);
         (uint48 turnNumRecord, uint48 finalizesAt, ) = _unpackStatus(channelId);
 
-        bytes32 challengeOutcomeHash = keccak256(variablePartAB[0].outcome);
-        bytes32 responseOutcomeHash = keccak256(variablePartAB[1].outcome);
         bytes32 challengeStateHash = _hashState(
             turnNumRecord,
             isFinalAB[0],
             channelId,
-            fixedPart,
             variablePartAB[0].appData,
-            challengeOutcomeHash
+            variablePartAB[0].outcome
         );
 
         bytes32 responseStateHash = _hashState(
             turnNumRecord + 1,
             isFinalAB[1],
             channelId,
-            fixedPart,
             variablePartAB[1].appData,
-            responseOutcomeHash
+            variablePartAB[1].outcome
         );
 
         // checks
+
+        bytes32 challengeOutcomeHash = keccak256(variablePartAB[0].outcome);
 
         _requireSpecificChallenge(
             ChannelData(turnNumRecord, finalizesAt, challengeStateHash, challengeOutcomeHash),
@@ -225,8 +223,8 @@ contract ForceMove is IForceMove, StatusManager {
      * @dev Finalizes a channel by providing a finalization proof. External wrapper for _conclude.
      * @param largestTurnNum The largest turn number of the submitted states; will overwrite the stored value of `turnNumRecord`.
      * @param fixedPart Data describing properties of the state channel that do not change with state updates.
-     * @param appPartHash The keccak256 of the abi.encode of `(challengeDuration, appDefinition, appData)`. Applies to all states in the finalization proof.
-     * @param outcomeHash The keccak256 of the abi.encode of the `outcome`. Applies to all states in the finalization proof.
+     * @param appData Application specific data.
+     * @param outcome An outcome structure. Applies to all states in the finalization proof.
      * @param numStates The number of states in the finalization proof.
      * @param whoSignedWhat An array denoting which participant has signed which state: `participant[i]` signed the state with index `whoSignedWhat[i]`.
      * @param sigs An array of signatures that support the state with the `largestTurnNum`: one for each participant, in participant order (e.g. [sig of participant[0], sig of participant[1], ...]).
@@ -234,8 +232,8 @@ contract ForceMove is IForceMove, StatusManager {
     function conclude(
         uint48 largestTurnNum,
         FixedPart memory fixedPart,
-        bytes32 appPartHash,
-        bytes32 outcomeHash,
+        bytes memory appData,
+        bytes memory outcome,
         uint8 numStates,
         uint8[] memory whoSignedWhat,
         Signature[] memory sigs
@@ -243,8 +241,8 @@ contract ForceMove is IForceMove, StatusManager {
         _conclude(
             largestTurnNum,
             fixedPart,
-            appPartHash,
-            outcomeHash,
+            appData,
+            outcome,
             numStates,
             whoSignedWhat,
             sigs
@@ -256,8 +254,8 @@ contract ForceMove is IForceMove, StatusManager {
      * @dev Finalizes a channel by providing a finalization proof. Internal method.
      * @param largestTurnNum The largest turn number of the submitted states; will overwrite the stored value of `turnNumRecord`.
      * @param fixedPart Data describing properties of the state channel that do not change with state updates.
-     * @param appPartHash The keccak256 of the abi.encode of `(challengeDuration, appDefinition, appData)`. Applies to all states in the finalization proof.
-     * @param outcomeHash The keccak256 of the `outcome`. Applies to all stats in the finalization proof.
+     * @param appData Application specific data.
+     * @param outcome An outcome structure. Applies to all stats in the finalization proof.
      * @param numStates The number of states in the finalization proof.
      * @param whoSignedWhat An array denoting which participant has signed which state: `participant[i]` signed the state with index `whoSignedWhat[i]`.
      * @param sigs An array of signatures that support the state with the `largestTurnNum`:: one for each participant, in participant order (e.g. [sig of participant[0], sig of participant[1], ...]).
@@ -265,8 +263,8 @@ contract ForceMove is IForceMove, StatusManager {
     function _conclude(
         uint48 largestTurnNum,
         FixedPart memory fixedPart,
-        bytes32 appPartHash,
-        bytes32 outcomeHash,
+        bytes memory appData,
+        bytes memory outcome,
         uint8 numStates,
         uint8[] memory whoSignedWhat,
         Signature[] memory sigs
@@ -296,8 +294,8 @@ contract ForceMove is IForceMove, StatusManager {
                         // Instead, we are protected by the require statement above
                         true, // isFinal
                         channelId,
-                        appPartHash,
-                        outcomeHash
+                        appData,
+                        outcome
                     )
                 )
             );
@@ -314,6 +312,8 @@ contract ForceMove is IForceMove, StatusManager {
             ),
             'Invalid signatures / !isFinal'
         );
+
+        bytes32 outcomeHash = keccak256(outcome);
 
         // effects
         statusOf[channelId] = _generateStatus(
@@ -546,9 +546,8 @@ contract ForceMove is IForceMove, StatusManager {
                 turnNum,
                 turnNum >= firstFinalTurnNum,
                 channelId,
-                fixedPart,
                 variableParts[i].appData,
-                keccak256(variableParts[i].outcome)
+                variableParts[i].outcome
             );
             if (turnNum < largestTurnNum) {
                 _requireValidTransition(
@@ -792,18 +791,16 @@ contract ForceMove is IForceMove, StatusManager {
      * @param turnNum Turn number
      * @param isFinal Is the state final?
      * @param channelId Unique identifier for the channel
-     * @param fixedPart Part of the state that does not change
      * @param appData Application specific date
-     * @param outcomeHash Hash of the outcome.
+     * @param outcome Outcome bytes.
      * @return The stateHash
      */
     function _hashState(
         uint48 turnNum,
         bool isFinal,
         bytes32 channelId,
-        FixedPart memory fixedPart,
         bytes memory appData,
-        bytes32 outcomeHash
+        bytes memory outcome
     ) internal pure returns (bytes32) {
         return
             keccak256(
@@ -812,14 +809,8 @@ contract ForceMove is IForceMove, StatusManager {
                         turnNum,
                         isFinal,
                         channelId,
-                        keccak256(
-                            abi.encode(
-                                fixedPart.challengeDuration,
-                                fixedPart.appDefinition,
-                                appData
-                            )
-                        ),
-                        outcomeHash
+                        appData,
+                        outcome
                     )
                 )
             );
