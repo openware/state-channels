@@ -26,7 +26,7 @@ interface IForceMove {
         // participants sign the hash of this
         uint48 turnNum;
         bool isFinal;
-        bytes32 channelId; // keccack(chainId,participants,channelNonce)
+        bytes32 channelId; // keccack(chainId,participants,channelNonce,appDefinition,challengeDuration)
         bytes32 appPartHash;
         //     keccak256(abi.encode(
         //         fixedPart.challengeDuration,

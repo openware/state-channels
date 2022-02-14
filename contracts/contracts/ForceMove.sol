@@ -834,7 +834,7 @@ contract ForceMove is IForceMove, StatusManager {
     function _getChannelId(FixedPart memory fixedPart) internal pure returns (bytes32 channelId) {
         require(fixedPart.chainId == getChainID(), 'Incorrect chainId');
         channelId = keccak256(
-            abi.encode(getChainID(), fixedPart.participants, fixedPart.channelNonce)
+            abi.encode(getChainID(), fixedPart.participants, fixedPart.channelNonce, fixedPart.appDefinition, fixedPart.challengeDuration)
         );
     }
 }
