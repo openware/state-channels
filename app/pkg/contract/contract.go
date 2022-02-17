@@ -20,7 +20,7 @@ type StateChannelContract interface {
 		Fingerprint   *big.Int
 	}, error)
 	Checkpoint(opts *bind.TransactOpts, fixedPart IForceMoveFixedPart, largestTurnNum *big.Int, variableParts []IForceMoveAppVariablePart, isFinalCount uint8, sigs []IForceMoveSignature, whoSignedWhat []uint8) (*types.Transaction, error)
-	ConcludeAndTransferAllAssets(opts *bind.TransactOpts, largestTurnNum *big.Int, fixedPart IForceMoveFixedPart, appPartHash [32]byte, outcomeBytes []byte, numStates uint8, whoSignedWhat []uint8, sigs []IForceMoveSignature) (*types.Transaction, error)
+	ConcludeAndTransferAllAssets(opts *bind.TransactOpts, largestTurnNum *big.Int, fixedPart IForceMoveFixedPart, appData []byte, outcomeBytes []byte, numStates uint8, whoSignedWhat []uint8, sigs []IForceMoveSignature) (*types.Transaction, error)
 	GetChainID(opts *bind.CallOpts) (*big.Int, error)
 }
 
@@ -36,18 +36,18 @@ func NewClient(contractAddr, rpcUrl string) (Client, error) {
 		return Client{}, err
 	}
 
-	adjucator, err := NewNitroAdjucator(contractAddress, ethClient)
+	adjudicator, err := NewNitroAdjudicator(contractAddress, ethClient)
 	if err != nil {
 		return Client{}, err
 	}
 
-	chainID, err := adjucator.GetChainID(nil)
+	chainID, err := adjudicator.GetChainID(nil)
 	if err != nil {
 		return Client{}, err
 	}
 
 	return Client{
-		Contract: adjucator,
+		Contract: adjudicator,
 		ChainID:  chainID,
 	}, nil
 }

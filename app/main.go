@@ -209,7 +209,7 @@ func main() {
 	concludeTransaction, err := client.Contract.ConcludeAndTransferAllAssets(&transactionOpts,
 		big.NewInt(int64(finalTurnNum)),
 		concludeParams.FixedPart,
-		concludeParams.AppPart,
+		concludeParams.AppData,
 		concludeParams.OutcomeState,
 		concludeParams.NumStates,
 		concludeParams.WhoSignedWhat,

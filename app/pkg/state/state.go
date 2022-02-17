@@ -14,7 +14,7 @@ import (
 
 type ConcludeParams struct {
 	OutcomeState  types.Bytes
-	AppPart       [32]byte
+	AppData       types.Bytes
 	Signatures    []contract.IForceMoveSignature
 	FixedPart     contract.IForceMoveFixedPart
 	NumStates     uint8
@@ -62,13 +62,7 @@ func BuildConcludeParams(s state.State, signature1, signature2 state.Signature) 
 		return ConcludeParams{}, err
 	}
 
-	appPartHash, err := s.AppPartHash()
-	if err != nil {
-		return ConcludeParams{}, err
-	}
-
-	var appPart [32]byte
-	copy(appPart[:], appPartHash.Bytes())
+	appData := s.VariablePart().AppData
 
 	var signatureR1, signatureS1, signatureR2, signatureS2 [32]byte
 
@@ -95,7 +89,7 @@ func BuildConcludeParams(s state.State, signature1, signature2 state.Signature) 
 
 	params := ConcludeParams{
 		OutcomeState:  outcomeState,
-		AppPart:       appPart,
+		AppData:       appData,
 		Signatures:    sigs,
 		FixedPart:     fixedPart,
 		NumStates:     numStates,
