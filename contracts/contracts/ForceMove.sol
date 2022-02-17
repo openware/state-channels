@@ -288,15 +288,13 @@ contract ForceMove is IForceMove, StatusManager {
         for (uint48 i = 0; i < numStates; i++) {
             stateHashes[i] = keccak256(
                 abi.encode(
-                    State(
-                        largestTurnNum + (i + 1) - numStates, // turnNum
-                        // ^^ SW-C101: It is not easy to use SafeMath here, since we are not using uint256s
-                        // Instead, we are protected by the require statement above
-                        true, // isFinal
-                        channelId,
-                        appData,
-                        outcome
-                    )
+                    channelId,
+                    appData,
+                    outcome,
+                    largestTurnNum + (i + 1) - numStates, // turnNum
+                    // ^^ SW-C101: It is not easy to use SafeMath here, since we are not using uint256s
+                    // Instead, we are protected by the require statement above
+                    true // isFinal
                 )
             );
         }
@@ -805,13 +803,11 @@ contract ForceMove is IForceMove, StatusManager {
         return
             keccak256(
                 abi.encode(
-                    State(
-                        turnNum,
-                        isFinal,
-                        channelId,
-                        appData,
-                        outcome
-                    )
+                    channelId,
+                    appData,
+                    outcome,
+                    turnNum,
+                    isFinal
                 )
             );
     }

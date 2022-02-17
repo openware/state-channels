@@ -24,11 +24,11 @@ interface IForceMove {
 
     struct State {
         // participants sign the hash of this
-        uint48 turnNum;
-        bool isFinal;
         bytes32 channelId; // keccack(chainId,participants,channelNonce,appDefinition,challengeDuration)
         bytes appData;
         bytes outcome;
+        uint48 turnNum;
+        bool isFinal;
     }
 
     /**

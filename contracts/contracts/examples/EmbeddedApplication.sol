@@ -273,11 +273,11 @@ contract EmbeddedApplication is
         bytes32 greaterStateHash = keccak256(
             abi.encode(
                 IForceMove.State(
-                    toAppData.supportProofForX.turnNumTo,
-                    false, // Assume isFinal is false
                     toAppData.channelIdForX,
                     toAppData.supportProofForX.variableParts[0].appData,
-                    greaterStateOutcome
+                    greaterStateOutcome,
+                    toAppData.supportProofForX.turnNumTo,
+                    false // Assume isFinal is false
                 )
             )
         );
@@ -304,11 +304,11 @@ contract EmbeddedApplication is
             bytes32 lesserStateHash = keccak256(
                 abi.encode(
                     IForceMove.State(
-                        toAppData.supportProofForX.turnNumTo - 1,
-                        false, // Assume isFinal is false
                         toAppData.channelIdForX,
                         toAppData.supportProofForX.variableParts[0].appData,
-                        toAppData.supportProofForX.variableParts[0].outcome
+                        toAppData.supportProofForX.variableParts[0].outcome,
+                        toAppData.supportProofForX.turnNumTo - 1,
+                        false // Assume isFinal is false
                     )
                 )
             );
