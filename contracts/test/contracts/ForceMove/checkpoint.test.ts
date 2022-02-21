@@ -1,5 +1,6 @@
 import {expectRevert} from '@statechannels/devtools';
 import {Contract, Wallet, ethers} from 'ethers';
+import {it} from '@jest/globals'
 
 const {HashZero} = ethers.constants;
 
@@ -24,6 +25,7 @@ import {
   setupContract,
 } from '../../test-helpers';
 import {signStates} from '../../../src';
+import { testParams } from './types';
 
 const provider = getTestProvider();
 let ForceMove: Contract;
@@ -33,7 +35,7 @@ const wallets = new Array(3);
 const challengeDuration = 0x1000;
 const asset = Wallet.createRandom().address;
 const defaultOutcome: Outcome = [{asset, allocations: [], metadata: '0x'}];
-let appDefinition;
+let appDefinition: string;
 
 // Populate wallets and participants array
 for (let i = 0; i < 3; i++) {
@@ -97,7 +99,7 @@ describe('checkpoint', () => {
     ${reverts5} | ${turnNumRecord + 1} | ${invalidTransition} | ${future}    | ${COUNTING_APP_INVALID_TRANSITION}
     ${reverts6} | ${turnNumRecord + 1} | ${unsupported}       | ${future}    | ${UNACCEPTABLE_WHO_SIGNED_WHAT}
     ${reverts7} | ${turnNumRecord + 1} | ${valid}             | ${past}      | ${CHANNEL_FINALIZED}
-  `('$description', async ({largestTurnNum, support, finalizesAt, reason}) => {
+  `('$description', async ({largestTurnNum, support, finalizesAt, reason}: testParams) => {
     const {appDatas, whoSignedWhat} = support;
     const channel: Channel = {chainId, channelNonce, participants};
     const channelId = getChannelId(channel);
@@ -114,7 +116,13 @@ describe('checkpoint', () => {
 
     const isOpen = !!finalizesAt;
     const outcome = isOpen ? undefined : defaultOutcome;
-    const challengeState: State = isOpen
+    
+    expect(outcome).not.toBe(undefined);
+    if (outcome === undefined) {
+      return;
+    }
+
+    const challengeState: State | undefined = isOpen
       ? undefined
       : {
           turnNum: turnNumRecord,

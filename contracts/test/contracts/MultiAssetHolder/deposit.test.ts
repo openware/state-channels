@@ -1,14 +1,15 @@
 import {expectRevert} from '@statechannels/devtools';
 import {ethers, Contract, Wallet, BigNumber, utils} from 'ethers';
+import {it} from '@jest/globals'
 const {AddressZero} = ethers.constants;
 
 import TokenArtifact from '../../../artifacts/contracts/Token.sol/Token.json';
 import {Channel, getChannelId} from '../../../src/contract/channel';
 import {getRandomNonce, getTestProvider, setupContract} from '../../test-helpers';
-import {Token, TESTNitroAdjudicator} from '../../../typechain';
+import {Token, TESTNitroAdjudicator} from '../../../typechain-types';
 // eslint-disable-next-line import/order
 import TESTNitroAdjudicatorArtifact from '../../../artifacts/contracts/test/TESTNitroAdjudicator.sol/TESTNitroAdjudicator.json';
-import {MAGIC_ADDRESS_INDICATING_ETH} from '../../../lib/src/transactions';
+import {MAGIC_ADDRESS_INDICATING_ETH} from '../../../src/transactions';
 const provider = getTestProvider();
 const testNitroAdjudicator = (setupContract(
   provider,
@@ -25,7 +26,7 @@ const token = (setupContract(
 const signer0 = getTestProvider().getSigner(0); // Convention matches setupContract function
 let signer0Address: string;
 const chainId = process.env.CHAIN_NETWORK_ID;
-const participants = [];
+const participants: string[] = [];
 
 const ETH = MAGIC_ADDRESS_INDICATING_ETH;
 const ERC20 = token.address;
@@ -98,6 +99,12 @@ describe('deposit', () => {
           value: asset === ETH ? held : 0,
         })
       ).wait();
+
+      expect(events).not.toBe(undefined);
+      if (events === undefined) {
+        return;
+      }
+      
       expect(await testNitroAdjudicator.holdings(asset, destination)).toEqual(held);
       if (asset === ERC20) {
         const {data: amountTransferred} = getTransferEvent(events);
@@ -115,6 +122,10 @@ describe('deposit', () => {
       await expectRevert(() => tx, reasonString);
     } else {
       const {events} = await (await tx).wait();
+      expect(events).not.toBe(undefined);
+      if (events === undefined) {
+        return;
+      }
       const depositedEvent = getDepositedEvent(events);
       expect(depositedEvent).toMatchObject({
         destination,
@@ -135,9 +146,9 @@ describe('deposit', () => {
   });
 });
 
-const getDepositedEvent = events => events.find(({event}) => event === 'Deposited').args;
-const getTransferEvent = events =>
-  events.find(({topics}) => topics[0] === token.filters.Transfer(AddressZero).topics[0]);
+const getDepositedEvent = (events: ethers.Event[]) => events.find(({event}) => event === 'Deposited')!.args;
+const getTransferEvent = (events: ethers.Event[]) =>
+  events.find(({topics}) => topics[0] === token.filters.Transfer(AddressZero).topics![0])!;
 
 async function getBalance(asset: string, address: string) {
   return asset === ETH

@@ -14,7 +14,7 @@ import {
 } from '../../../../src/contract/embedded-application';
 import {getTestProvider, setupContract} from '../../../test-helpers';
 import {MAGIC_ADDRESS_INDICATING_ETH} from '../../../../src/transactions';
-import {Outcome} from '../../../../lib/src';
+import {Outcome} from '../../../../src/contract/outcome';
 
 type RevertReason =
   // each reason represents a distinct code path that we should check in this test

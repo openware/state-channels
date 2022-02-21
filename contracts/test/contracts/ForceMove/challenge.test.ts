@@ -1,5 +1,6 @@
 import {expectRevert} from '@statechannels/devtools';
 import {Contract, Wallet, ethers, Signature, BigNumber} from 'ethers';
+import {it} from '@jest/globals'
 
 const {HashZero} = ethers.constants;
 const {defaultAbiCoder} = ethers.utils;
@@ -33,6 +34,7 @@ import {
 import {createChallengeTransaction, NITRO_MAX_GAS} from '../../../src/transactions';
 import {hashChallengeMessage} from '../../../src/contract/challenge';
 import {MAX_OUTCOME_ITEMS} from '../../../src/contract/outcome';
+import { transitionType } from './types';
 
 const provider = getTestProvider();
 
@@ -148,7 +150,7 @@ describe('challenge', () => {
   `(
     '$description', // For the purposes of this test, chainId and participants are fixed, making channelId 1-1 with channelNonce
     async ({initialFingerprint, stateData, challengeSignatureType, reasonString}) => {
-      const {appDatas, whoSignedWhat} = stateData;
+      const {appDatas, whoSignedWhat} : transitionType = stateData;
       const channel: Channel = {
         chainId,
         participants,

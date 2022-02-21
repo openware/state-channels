@@ -1,5 +1,6 @@
 import {expectRevert} from '@statechannels/devtools';
 import {Contract, Wallet, ethers, BigNumber, constants} from 'ethers';
+import {it} from '@jest/globals'
 
 import TokenArtifact from '../../../artifacts/contracts/Token.sol/Token.json';
 import {Channel, getChannelId} from '../../../src/contract/channel';
@@ -18,8 +19,8 @@ import {
 } from '../../test-helpers';
 import {signStates, channelDataToStatus} from '../../../src';
 import {MAGIC_ADDRESS_INDICATING_ETH, NITRO_MAX_GAS} from '../../../src/transactions';
-import {TESTNitroAdjudicator} from '../../../typechain/TESTNitroAdjudicator';
-import {Token} from '../../../typechain/Token';
+import {TESTNitroAdjudicator} from '../../../typechain-types/TESTNitroAdjudicator';
+import {Token} from '../../../typechain-types/Token';
 // eslint-disable-next-line import/order
 import TESTNitroAdjudicatorArtifact from '../../../artifacts/contracts/test/TESTNitroAdjudicator.sol/TESTNitroAdjudicator.json';
 
@@ -41,9 +42,15 @@ const participants = ['', '', ''];
 const wallets = new Array(3);
 const challengeDuration = 0x1000;
 
-let appDefinition;
+let appDefinition: string;
 
-const addresses = {
+interface addressesT {
+  [index: string]: string | undefined,
+  At: string,
+  Bt: string,
+}
+
+const addresses: addressesT = {
   // Channels
   c: undefined,
   C: randomChannelId(),
@@ -60,9 +67,13 @@ const addresses = {
   ERC20: undefined,
 };
 
-const tenPayouts = {ERC20: {}};
-const fiftyPayouts = {ERC20: {}};
-const oneHundredPayouts = {ERC20: {}};
+interface payoutsT {
+  [index: string]: number
+}
+
+const tenPayouts = {ERC20: {} as payoutsT};
+const fiftyPayouts = {ERC20: {} as payoutsT};
+const oneHundredPayouts = {ERC20: {} as payoutsT};
 for (let i = 0; i < 100; i++) {
   addresses[i.toString()] =
     '0x000000000000000000000000e0c3b40fdff77c786dd3737837887c85' + (0x2392fa22 + i).toString(16); // they need to be distinct because JS objects
@@ -130,7 +141,7 @@ describe('concludeAndTransferAllAssets', () => {
       heldAfter: OutcomeShortHand;
       newOutcome: OutcomeShortHand;
       payouts: OutcomeShortHand;
-      reasonString;
+      reasonString: string;
     }) => {
       const channel: Channel = {chainId, participants, channelNonce};
       const channelId = getChannelId(channel);

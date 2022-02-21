@@ -1,5 +1,6 @@
 import {expectRevert} from '@statechannels/devtools';
 import {Contract, Wallet, constants} from 'ethers';
+import {it} from '@jest/globals'
 
 import {Channel, getChannelId} from '../../../src/contract/channel';
 import {encodeOutcome, hashOutcome, Outcome} from '../../../src/contract/outcome';
@@ -13,8 +14,8 @@ import {
   replaceAddressesAndBigNumberify,
   setupContract,
 } from '../../test-helpers';
-import {TESTNitroAdjudicator} from '../../../typechain/TESTNitroAdjudicator';
-import {Token} from '../../../typechain/Token';
+import {TESTNitroAdjudicator} from '../../../typechain-types/TESTNitroAdjudicator';
+import {Token} from '../../../typechain-types/Token';
 import TokenArtifact from '../../../artifacts/contracts/Token.sol/Token.json';
 // eslint-disable-next-line import/order
 import TESTNitroAdjudicatorArtifact from '../../../artifacts/contracts/test/TESTNitroAdjudicator.sol/TESTNitroAdjudicator.json';
@@ -35,7 +36,7 @@ const token = (setupContract(
 
 const addresses = {
   // Channels
-  c: undefined,
+  c: undefined as string | undefined,
   C: randomChannelId(),
   X: randomChannelId(),
   // Externals
@@ -147,6 +148,11 @@ describe('transferAllAssets', () => {
         await expectRevert(() => tx1, regex);
       } else {
         const {events: eventsFromTx} = await (await tx1).wait();
+
+        expect(eventsFromTx).not.toBe(undefined);
+        if (eventsFromTx === undefined) {
+          return;
+        }
 
         // expect an event per asset
         expect(eventsFromTx[0].event).toEqual('AllocationUpdated');
