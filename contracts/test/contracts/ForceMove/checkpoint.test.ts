@@ -60,7 +60,7 @@ const unsupported = {
   appDatas: [0, 1, 2],
 };
 
-const itOpensTheChannelIf = 'It accepts valid input, and clears any existing challenge, if';
+const itOpensTheChannelIf = 'It accepts valid input, and clears any existing challenge, if ';
 const accepts1 = itOpensTheChannelIf + 'the slot is empty';
 const accepts2 =
   itOpensTheChannelIf + 'there is a challenge and the existing turnNumRecord is increased';
@@ -115,12 +115,7 @@ describe('checkpoint', () => {
     }));
 
     const isOpen = !!finalizesAt;
-    const outcome = isOpen ? undefined : defaultOutcome;
-    
-    expect(outcome).not.toBe(undefined);
-    if (outcome === undefined) {
-      return;
-    }
+    const outcome = isOpen ? [] : defaultOutcome;
 
     const challengeState: State | undefined = isOpen
       ? undefined

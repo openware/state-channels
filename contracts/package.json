@@ -7,8 +7,8 @@
     "contracts:deploy-localhost": "npx hardhat deploy --network localhost --export-all addresses.json && node ./scripts/postdeploy.ts",
     "contracts:node": "npx hardhat node --no-deploy",
     "test": "npm run test:contracts && npm run test:app --all",
-    "test:app": "jest -c ./config/jest/jest.config.js",
-    "test:contracts": "jest -c ./config/jest/jest.contracts.config.js"
+    "test:app": "npx hardhat compile && jest -c ./config/jest/jest.config.js",
+    "test:contracts": "npx hardhat compile && jest -c ./config/jest/jest.contracts.config.js"
   },
   "keywords": [],
   "author": "",
