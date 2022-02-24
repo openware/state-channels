@@ -2,7 +2,7 @@ import {utils} from 'ethers';
 
 import {Channel, getChannelId} from './channel';
 import {encodeOutcome, hashOutcome, Outcome} from './outcome';
-import {Address, Bytes32, Uint256, Uint48} from './types';
+import {Address, Bytes, Bytes32, Uint256, Uint48} from './types';
 
 /**
  * Holds all of the data defining the state of a channel
@@ -42,8 +42,8 @@ export function getFixedPart(state: State): FixedPart {
  * The part of a State which usually changes during state channel updates
  */
 export interface VariablePart {
-  outcome: Bytes32;
-  appData: Bytes32;
+  outcome: Bytes;
+  appData: Bytes;
 }
 
 /**
@@ -52,7 +52,16 @@ export interface VariablePart {
  * @returns the VariablePart, which usually changes during state channel updates
  */
 export function getVariablePart(state: State): VariablePart {
-  return {outcome: encodeOutcome(state.outcome), appData: state.appData};
+  return {outcome: encodeOutcome(state.outcome), appData: encodeAppData(state.appData)};
+}
+
+/**
+ * Encodes appData
+ * @param appData appData of the state
+ * @returns an array of bytes of apppData
+ */
+export function encodeAppData(appData: string): Bytes {
+  return utils.defaultAbiCoder.encode(['bytes'], [appData]);
 }
 
 /**
@@ -60,7 +69,7 @@ export function getVariablePart(state: State): VariablePart {
  * @param state a State
  * @returns a 32 byte keccak256 hash
  */
-export function hashAppPart(state: State): Bytes32 {
+ export function hashAppPart(state: State): Bytes32 {
   const {challengeDuration, appDefinition, appData} = state;
   return utils.keccak256(
     utils.defaultAbiCoder.encode(
@@ -69,23 +78,29 @@ export function hashAppPart(state: State): Bytes32 {
     )
   );
 }
+
 /**
  * Encodes and hashes a state
  * @param state a State
  * @returns a 32 byte keccak256 hash
  */
 export function hashState(state: State): Bytes32 {
-  const {turnNum, isFinal} = state;
-  const channelId = getChannelId(state.channel);
-  const appPartHash = hashAppPart(state);
-  const outcomeHash = hashOutcome(state.outcome);
+  const {turnNum, isFinal, appData, outcome} = state;
+  const channelId = getChannelId(getFixedPart(state));
+
+  const appDataBytes = encodeAppData(appData);
+  const outcomeBytes = encodeOutcome(outcome);
 
   return utils.keccak256(
     utils.defaultAbiCoder.encode(
+      // [
+      //   'tuple(bytes32 channelId, bytes appDataBytes, bytes outcomeBytes, uint256 turnNum, bool isFinal)',
+      // ],
+      // [{channelId, appDataBytes, outcomeBytes, turnNum, isFinal}]
       [
-        'tuple(uint256 turnNum, bool isFinal, bytes32 channelId, bytes32 appPartHash, bytes32 outcomeHash)',
+        'bytes32', 'bytes', 'bytes', 'uint256', 'bool',
       ],
-      [{turnNum, isFinal, channelId, appPartHash, outcomeHash}]
+      [channelId, appDataBytes, outcomeBytes, turnNum, isFinal]
     )
   );
 }

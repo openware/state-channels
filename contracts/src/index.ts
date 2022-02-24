@@ -147,7 +147,6 @@ export {
   VariablePart,
   getVariablePart,
   getFixedPart,
-  hashAppPart,
   hashState,
 } from './contract/state';
 

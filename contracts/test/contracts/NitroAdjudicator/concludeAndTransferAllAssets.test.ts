@@ -1,11 +1,11 @@
 import {expectRevert} from '@statechannels/devtools';
-import {Contract, Wallet, ethers, BigNumber, constants} from 'ethers';
+import {Contract, Wallet, ethers, BigNumber, constants, FixedNumber} from 'ethers';
 import {it} from '@jest/globals'
 
 import TokenArtifact from '../../../artifacts/contracts/Token.sol/Token.json';
 import {Channel, getChannelId} from '../../../src/contract/channel';
 import {encodeOutcome, Outcome} from '../../../src/contract/outcome';
-import {getFixedPart, hashAppPart, State} from '../../../src/contract/state';
+import {encodeAppData, FixedPart, getFixedPart, State} from '../../../src/contract/state';
 import {
   computeOutcome,
   getPlaceHolderContractAddress,
@@ -144,7 +144,8 @@ describe('concludeAndTransferAllAssets', () => {
       reasonString: string;
     }) => {
       const channel: Channel = {chainId, participants, channelNonce};
-      const channelId = getChannelId(channel);
+      const fixedPart: FixedPart = {chainId, participants, channelNonce, appDefinition, challengeDuration}
+      const channelId = getChannelId(fixedPart);
       addresses.c = channelId;
       const support = oneState;
       const {appData, whoSignedWhat} = support;
@@ -208,7 +209,7 @@ describe('concludeAndTransferAllAssets', () => {
       const tx = testNitroAdjudicator.concludeAndTransferAllAssets(
         largestTurnNum,
         getFixedPart(states[0]),
-        hashAppPart(states[0]),
+        encodeAppData(states[0].appData),
         encodeOutcome(outcome),
         numStates,
         whoSignedWhat,

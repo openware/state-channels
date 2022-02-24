@@ -10,7 +10,7 @@ import ForceMoveArtifact from '../../../artifacts/contracts/test/TESTForceMove.s
 import {Channel, getChannelId} from '../../../src/contract/channel';
 import {channelDataToStatus} from '../../../src/contract/channel-storage';
 import {Outcome} from '../../../src/contract/outcome';
-import {State} from '../../../src/contract/state';
+import {FixedPart, State} from '../../../src/contract/state';
 import {checkpointArgs} from '../../../src/contract/transaction-creators/force-move';
 import {
   CHANNEL_FINALIZED,
@@ -102,7 +102,8 @@ describe('checkpoint', () => {
   `('$description', async ({largestTurnNum, support, finalizesAt, reason}: testParams) => {
     const {appDatas, whoSignedWhat} = support;
     const channel: Channel = {chainId, channelNonce, participants};
-    const channelId = getChannelId(channel);
+    const fixedPart: FixedPart = {chainId, channelNonce, participants, appDefinition, challengeDuration};
+    const channelId = getChannelId(fixedPart);
 
     const states = appDatas.map((data, idx) => ({
       turnNum: largestTurnNum - appDatas.length + 1 + idx,
@@ -141,7 +142,7 @@ describe('checkpoint', () => {
     // Call public wrapper to set state (only works on test contract)
     await (await ForceMove.setStatus(channelId, fingerprint)).wait();
     expect(await ForceMove.statusOf(channelId)).toEqual(fingerprint);
-
+    
     const signatures = await signStates(states, wallets, whoSignedWhat);
 
     const tx = ForceMove.checkpoint(...checkpointArgs({states, signatures, whoSignedWhat}));
