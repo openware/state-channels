@@ -25,7 +25,7 @@ const MaxRandNum = 100000000000
 var (
 	AssetAddress = common.HexToAddress("0x00")
 	GasLimit     = uint64(6721975)
-	GasPrice     = big.NewInt(20000000000)
+	GasPrice     = big.NewInt(225000000000)
 )
 
 type ContractTestSuite struct {
@@ -54,7 +54,7 @@ func (s *ContractTestSuite) SetupSuite() {
 	contractObj, err := parser.ToContract(mydir + "/../../contracts/addresses.json")
 	s.Require().NoError(err)
 	contractAddress := contractObj.ChainIds[0].SC.NitroAdj.Address
-	client, err := contract.NewClient(contractAddress, "http://127.0.0.1:8545")
+	client, err := contract.NewClient(contractAddress, "http://localhost:9650/ext/bc/C/rpc")
 	s.Require().NoError(err)
 	s.ContractClient = client
 }

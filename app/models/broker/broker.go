@@ -12,7 +12,7 @@ import (
 	typ "github.com/statechannels/go-nitro/types"
 )
 
-var ChainId = big.NewInt(1337)
+var ChainId = big.NewInt(43112)
 
 type Broker struct {
 	Address     typ.Address

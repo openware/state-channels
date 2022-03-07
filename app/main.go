@@ -22,11 +22,11 @@ var ChainID *big.Int
 var ContractAddress string
 
 var (
-	RpcUrl                  = "http://127.0.0.1:8545"
+	RpcUrl                  = "http://localhost:9650/ext/bc/C/rpc"
 	AssetAddress            = common.HexToAddress("0x00")
 	MaxTurnNum              = 5
 	GasLimit                = uint64(6721975)
-	GasPrice                = big.NewInt(20000000000)
+	GasPrice                = big.NewInt(225000000000)
 	initialAmountForBroker1 = big.NewInt(100)
 	initialAmountForBroker2 = big.NewInt(200)
 )
@@ -44,12 +44,13 @@ func main() {
 		panic(err)
 	}
 
-	contractObj, err := parser.ToContract(mydir + "/../contracts/addresses.json")
-	if err != nil {
-		panic(err)
-	}
+	// contractObj, err := parser.ToContract(mydir + "/../contracts/addresses.json")
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	ContractAddress = contractObj.ChainIds[0].SC.NitroAdj.Address
+	ContractAddress = "0x52C84043CD9c865236f11d9Fc9F56aa003c1f922"
+	//contractObj.ChainIds[0].SC.NitroAdj.Address
 
 	// Initialize Broker 1
 	broker1 := vaultAccount.Accounts[0]
