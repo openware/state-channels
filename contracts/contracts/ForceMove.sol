@@ -131,19 +131,19 @@ contract ForceMove is IForceMove, StatusManager {
         (uint48 turnNumRecord, uint48 finalizesAt, ) = _unpackStatus(channelId);
 
         bytes32 challengeStateHash = _hashState(
-            turnNumRecord,
-            isFinalAB[0],
             channelId,
             variablePartAB[0].appData,
-            variablePartAB[0].outcome
+            variablePartAB[0].outcome,
+            turnNumRecord,
+            isFinalAB[0]
         );
 
         bytes32 responseStateHash = _hashState(
-            turnNumRecord + 1,
-            isFinalAB[1],
             channelId,
             variablePartAB[1].appData,
-            variablePartAB[1].outcome
+            variablePartAB[1].outcome,
+            turnNumRecord + 1,
+            isFinalAB[1]
         );
 
         // checks
@@ -541,11 +541,11 @@ contract ForceMove is IForceMove, StatusManager {
         for (uint48 i = 0; i < variableParts.length; i++) {
             turnNum = largestTurnNum - uint48(variableParts.length) + 1 + i;
             stateHashes[i] = _hashState(
-                turnNum,
-                turnNum >= firstFinalTurnNum,
                 channelId,
                 variableParts[i].appData,
-                variableParts[i].outcome
+                variableParts[i].outcome,
+                turnNum,
+                turnNum >= firstFinalTurnNum
             );
             if (turnNum < largestTurnNum) {
                 _requireValidTransition(
@@ -794,11 +794,11 @@ contract ForceMove is IForceMove, StatusManager {
      * @return The stateHash
      */
     function _hashState(
-        uint48 turnNum,
-        bool isFinal,
         bytes32 channelId,
         bytes memory appData,
-        bytes memory outcome
+        bytes memory outcome,
+        uint48 turnNum,
+        bool isFinal
     ) internal pure returns (bytes32) {
         return
             keccak256(
