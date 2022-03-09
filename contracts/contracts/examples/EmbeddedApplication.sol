@@ -263,14 +263,6 @@ contract EmbeddedApplication is
             '1 or 2 states required'
         );
 
-        bytes32 appPartHash = keccak256(
-            abi.encode(
-                toAppData.supportProofForX.fixedPart.challengeDuration,
-                toAppData.supportProofForX.fixedPart.appDefinition,
-                toAppData.supportProofForX.variableParts[0].appData
-            )
-        );
-
         // hash the greatest state first (either the later of a pair, or the only state provided)
 
         uint256 finalIndex = toAppData.supportProofForX.variableParts.length - 1;
@@ -281,11 +273,11 @@ contract EmbeddedApplication is
         bytes32 greaterStateHash = keccak256(
             abi.encode(
                 IForceMove.State(
-                    toAppData.supportProofForX.turnNumTo,
-                    false, // Assume isFinal is false
                     toAppData.channelIdForX,
-                    appPartHash,
-                    keccak256(greaterStateOutcome)
+                    toAppData.supportProofForX.variableParts[0].appData,
+                    greaterStateOutcome,
+                    toAppData.supportProofForX.turnNumTo,
+                    false // Assume isFinal is false
                 )
             )
         );
@@ -312,11 +304,11 @@ contract EmbeddedApplication is
             bytes32 lesserStateHash = keccak256(
                 abi.encode(
                     IForceMove.State(
-                        toAppData.supportProofForX.turnNumTo - 1,
-                        false, // Assume isFinal is false
                         toAppData.channelIdForX,
-                        appPartHash,
-                        keccak256(toAppData.supportProofForX.variableParts[0].outcome)
+                        toAppData.supportProofForX.variableParts[0].appData,
+                        toAppData.supportProofForX.variableParts[0].outcome,
+                        toAppData.supportProofForX.turnNumTo - 1,
+                        false // Assume isFinal is false
                     )
                 )
             );
