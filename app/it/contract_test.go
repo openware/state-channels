@@ -65,7 +65,7 @@ func (s *ContractTestSuite) openChannel(amount1, amount2 *big.Int) channel.Chann
 	preFundState := state.Build(
 		s.ContractClient.ChainID, channelNonce, AssetAddress,
 		amount1, amount2,
-		&s.Brokers[0], &s.Brokers[1], false, 0,
+		&s.Brokers[0], &s.Brokers[1], false, 0, []byte{},
 	)
 
 	// Open a channel between brokers
@@ -79,7 +79,7 @@ func (s *ContractTestSuite) buildFinalState(c *channel.Channel, amount1, amount2
 	finalState := state.Build(
 		s.ContractClient.ChainID, c.ChannelNonce, AssetAddress,
 		amount1, amount2,
-		&s.Brokers[0], &s.Brokers[1], final, finalTurnNum,
+		&s.Brokers[0], &s.Brokers[1], final, finalTurnNum, []byte{},
 	)
 	c.SignedStateForTurnNum[finalTurnNum] = states.NewSignedState(finalState)
 

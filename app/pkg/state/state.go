@@ -26,14 +26,14 @@ func Build(
 	assetAddress common.Address,
 	amountForBroker1, amountForBroker2 *big.Int,
 	broker1, broker2 *broker.Broker,
-	isFinal bool, turnNum uint64) state.State {
+	isFinal bool, turnNum uint64, appData []byte) state.State {
 
 	state := state.State{
 		ChainId:           chainID,
 		Participants:      []types.Address{broker1.Address, broker2.Address},
 		ChannelNonce:      channelNonce,
 		ChallengeDuration: big.NewInt(60),
-		AppData:           []byte{},
+		AppData:           appData,
 		Outcome: outcome.Exit{
 			outcome.SingleAssetExit{
 				Asset: assetAddress,
