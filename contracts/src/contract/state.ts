@@ -1,7 +1,7 @@
 import {utils} from 'ethers';
 
 import {Channel, getChannelId} from './channel';
-import {encodeOutcome, hashOutcome, Outcome} from './outcome';
+import {encodeOutcome, Outcome} from './outcome';
 import {Address, Bytes, Bytes32, Uint256, Uint48} from './types';
 
 /**
@@ -80,27 +80,56 @@ export function encodeAppData(appData: string): Bytes {
 }
 
 /**
- * Encodes and hashes a state
+ * Encodes a state
  * @param state a State
- * @returns a 32 byte keccak256 hash
+ * @returns bytes array encoding
  */
-export function hashState(state: State): Bytes32 {
+export function encodeState(state: State): Bytes {
   const {turnNum, isFinal, appData, outcome} = state;
   const channelId = getChannelId(getFixedPart(state));
 
   const appDataBytes = encodeAppData(appData);
-  const outcomeBytes = encodeOutcome(outcome);
+  return utils.defaultAbiCoder.encode(
+    [
+      'bytes32',
+      'bytes',
+      {
+        type: "tuple[]",
+        components: [
+            // @ts-ignore - reference ethers.utils.ParamType for more info on why certain properties are not present
+            { name: "asset", type: "address" },
+            // @ts-ignore
+            { name: "metadata", type: "bytes" },
+            {
+                type: "tuple[]",
+                name: "allocations",
+                components: [
+                    // @ts-ignore
+                    { name: "destination", type: "bytes32" },
+                    // @ts-ignore
+                    { name: "amount", type: "uint256" },
+                    // @ts-ignore
+                    { name: "allocationType", type: "uint8" },
+                    // @ts-ignore
+                    { name: "metadata", type: "bytes" },
+                ],
+            },
+        ],
+      },
+      'uint256',
+      'bool',
+    ],
+    [channelId, appDataBytes, outcome, turnNum, isFinal]
+  );
+}
 
+/**
+ * Hashes a state
+ * @param state a State
+ * @returns a 32 byte keccak256 hash
+ */
+export function hashState(state: State): Bytes32 {
   return utils.keccak256(
-    utils.defaultAbiCoder.encode(
-      // [
-      //   'tuple(bytes32 channelId, bytes appDataBytes, bytes outcomeBytes, uint256 turnNum, bool isFinal)',
-      // ],
-      // [{channelId, appDataBytes, outcomeBytes, turnNum, isFinal}]
-      [
-        'bytes32', 'bytes', 'bytes', 'uint256', 'bool',
-      ],
-      [channelId, appDataBytes, outcomeBytes, turnNum, isFinal]
-    )
+    encodeState(state)
   );
 }
