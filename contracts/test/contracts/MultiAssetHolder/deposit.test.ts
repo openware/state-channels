@@ -5,7 +5,7 @@ const {AddressZero} = ethers.constants;
 
 import TokenArtifact from '../../../artifacts/contracts/Token.sol/Token.json';
 import {Channel, getChannelId} from '../../../src/contract/channel';
-import {getRandomNonce, getTestProvider, setupContract} from '../../test-helpers';
+import {getPlaceHolderContractAddress, getRandomNonce, getTestProvider, setupContract} from '../../test-helpers';
 import {Token, TESTNitroAdjudicator} from '../../../typechain-types';
 // eslint-disable-next-line import/order
 import TESTNitroAdjudicatorArtifact from '../../../artifacts/contracts/test/TESTNitroAdjudicator.sol/TESTNitroAdjudicator.json';
@@ -27,6 +27,8 @@ const signer0 = getTestProvider().getSigner(0); // Convention matches setupContr
 let signer0Address: string;
 const chainId = process.env.CHAIN_NETWORK_ID;
 const participants: string[] = [];
+const challengeDuration = 0x1000;
+let appDefinition: string;
 
 const ETH = MAGIC_ADDRESS_INDICATING_ETH;
 const ERC20 = token.address;
@@ -38,6 +40,7 @@ for (let i = 0; i < 3; i++) {
 
 beforeAll(async () => {
   signer0Address = await signer0.getAddress();
+  appDefinition = getPlaceHolderContractAddress();
 });
 
 const description0 = 'Deposits Tokens (expectedHeld = 0)';
@@ -75,7 +78,7 @@ describe('deposit', () => {
     heldAfter = BigNumber.from(heldAfter);
 
     const destinationChannel: Channel = {chainId, channelNonce, participants};
-    const destination = getChannelId(destinationChannel);
+    const destination = getChannelId({...destinationChannel, appDefinition, challengeDuration});
 
     if (asset === ERC20) {
       // Check msg.sender has enough tokens

@@ -6,6 +6,7 @@ import {Channel, getChannelId} from '../../../src/contract/channel';
 import {encodeOutcome, hashOutcome, Outcome} from '../../../src/contract/outcome';
 import {
   computeOutcome,
+  getPlaceHolderContractAddress,
   getRandomNonce,
   getTestProvider,
   OutcomeShortHand,
@@ -51,12 +52,18 @@ const addresses = {
 const chainId = process.env.CHAIN_NETWORK_ID;
 const participants = ['', '', ''];
 const wallets = new Array(3);
+const challengeDuration = 0x1000;
+let appDefinition: string;
 
 // Populate wallets and participants array
 for (let i = 0; i < 3; i++) {
   wallets[i] = Wallet.createRandom();
   participants[i] = wallets[i].address;
 }
+
+beforeAll(async () => {
+  appDefinition = getPlaceHolderContractAddress();
+});
 
 const description =
   'testNitroAdjudicator accepts a transferAllAssets tx for a finalized channel, and 2x Asset types transferred';
@@ -84,7 +91,7 @@ describe('transferAllAssets', () => {
       reasonString: string;
     }) => {
       const channel: Channel = {chainId, channelNonce, participants};
-      const channelId = getChannelId(channel);
+      const channelId = getChannelId({...channel, appDefinition, challengeDuration});
       addresses.c = channelId;
 
       // Transform input data (unpack addresses and BigNumberify amounts)

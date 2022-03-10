@@ -101,7 +101,7 @@ describe('conclude', () => {
     '$description', // For the purposes of this test, chainId and participants are fixed, making channelId 1-1 with channelNonce
     async ({initialFingerprint, largestTurnNum, support, reasonString}) => {
       const channel: Channel = {chainId, participants, channelNonce};
-      const channelId = getChannelId(channel);
+      const channelId = getChannelId({...channel, appDefinition, challengeDuration});
       const {appData, whoSignedWhat} = support;
       const numStates = appData.length;
 
@@ -121,7 +121,7 @@ describe('conclude', () => {
       // Call public wrapper to set state (only works on test contract)
       await (await ForceMove.setStatus(channelId, initialFingerprint)).wait();
       expect(await ForceMove.statusOf(channelId)).toEqual(initialFingerprint);
-
+      
       // Sign the states
       const sigs = await signStates(states, wallets, whoSignedWhat);
 

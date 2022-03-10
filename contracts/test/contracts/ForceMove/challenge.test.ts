@@ -156,8 +156,7 @@ describe('challenge', () => {
         participants,
         channelNonce,
       };
-      const channelId = getChannelId(channel);
-
+      
       const states: State[] = appDatas.map((data, idx) => ({
         turnNum: largestTurnNum - appDatas.length + 1 + idx,
         isFinal: idx > appDatas.length - isFinalCount,
@@ -169,7 +168,8 @@ describe('challenge', () => {
       }));
       const variableParts = states.map(state => getVariablePart(state));
       const fixedPart = getFixedPart(states[0]);
-
+      const channelId = getChannelId(fixedPart);
+      
       // Sign the states
       const signatures = await signStates(states, wallets, whoSignedWhat);
       const challengeState: SignedState = {
@@ -257,8 +257,10 @@ describe('challenge', () => {
 });
 
 describe('challenge with transaction generator', () => {
+  const twoPartyFixedPart = {...twoPartyChannel, appDefinition, challengeDuration};
+
   beforeEach(async () => {
-    await (await ForceMove.setStatus(getChannelId(twoPartyChannel), HashZero)).wait();
+    await (await ForceMove.setStatus(getChannelId(twoPartyFixedPart), HashZero)).wait();
   });
   it.each`
     description                                     | appData   | outcome                            | turnNums  | challenger

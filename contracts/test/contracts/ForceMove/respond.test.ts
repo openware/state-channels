@@ -83,7 +83,7 @@ describe('respond', () => {
       reasonString,
     }) => {
       const channel: Channel = {chainId, channelNonce, participants};
-      const channelId = getChannelId(channel);
+      const channelId = getChannelId({...channel, appDefinition, challengeDuration});
 
       const challengeState: State = {
         turnNum: turnNumRecord,

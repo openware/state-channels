@@ -134,7 +134,7 @@ export function concludeArgs(
   const lastState = states.reduce((s1, s2) => (s1.turnNum >= s2.turnNum ? s1 : s2), states[0]);
   const largestTurnNum = lastState.turnNum;
   const fixedPart = getFixedPart(lastState);
-  const appPartBytes = encodeAppData(lastState.appData);
+  const appDataBytes = encodeAppData(lastState.appData);
   const outcomeBytes = encodeOutcome(lastState.outcome);
 
   const numStates = states.length;
@@ -142,7 +142,7 @@ export function concludeArgs(
   return [
     largestTurnNum,
     fixedPart,
-    appPartBytes,
+    appDataBytes,
     outcomeBytes,
     numStates,
     whoSignedWhat,
