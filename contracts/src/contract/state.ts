@@ -43,7 +43,8 @@ export function getFixedPart(state: State): FixedPart {
  */
 export interface VariablePart {
   outcome: Bytes;
-  appData: Bytes;
+  appData: Bytes; // any encoded app-related type encoded once more as bytes
+  //(e.g. if in SC App uint256 is used, firstly enode appData as uint256, then as bytes)
 }
 
 /**
