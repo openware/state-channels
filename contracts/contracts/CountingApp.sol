@@ -16,11 +16,11 @@ contract CountingApp is IForceMoveApp {
      * @notice Decodes the appData.
      * @dev Decodes the appData.
      * @param appDataBytes The abi.encode of a CountingAppData struct describing the application-specific data.
-     * @return A CountingAppDatat struct containing the application-specific data.
+     * @return A CountingAppData struct containing the application-specific data.
      */
-    function appData(bytes memory appDataBytes) internal pure returns (uint256) {
+    function appData(bytes memory appDataBytes) internal pure returns (CountingAppData memory) {
         bytes memory decodedAppData = abi.decode(appDataBytes, (bytes));
-        return abi.decode(decodedAppData, (uint256));
+        return abi.decode(decodedAppData, (CountingAppData));
     }
 
     /**
@@ -37,7 +37,7 @@ contract CountingApp is IForceMoveApp {
         uint256 // nParticipants, unused
     ) public override pure returns (bool) {
         require(
-            appData(b.appData) == appData(a.appData) + 1,
+            appData(b.appData).counter == appData(a.appData).counter + 1,
             'Counter must be incremented'
         );
         // Note this is gas inefficient, and inferior to _bytesEqual in use elsewhere
