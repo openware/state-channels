@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "contracts:deploy-localhost": "npx hardhat deploy --network localhost --export-all addresses.json && node ./scripts/postdeploy.ts",
+    "contracts:deploy-rinkeby": "npx hardhat deploy --network rinkeby --export-all addresses.json && node ./scripts/postdeploy.ts",
     "contracts:node": "npx hardhat node --no-deploy",
     "test": "npm run test:contracts && npm run test:app --all",
     "test:app": "npx hardhat compile && jest -c ./config/jest/jest.config.js",
