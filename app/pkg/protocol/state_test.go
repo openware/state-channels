@@ -29,7 +29,7 @@ func TestBuildState(t *testing.T) {
 			},
 		}
 
-		state := BuildState(*contract, []Participant{*participant1, *participant2}, channelNonce, []byte{}, 1, true)
+		state := buildState(*contract, []Participant{*participant1, *participant2}, channelNonce, []byte{}, 1, true)
 		assert.Equal(t, true, state.IsFinal)
 		assert.Equal(t, uint64(1), state.TurnNum)
 		assert.Equal(t, []common.Address{participant1.Address, participant2.Address}, state.Participants)
