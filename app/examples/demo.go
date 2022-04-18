@@ -167,9 +167,9 @@ func confirmChannelFund(
 		fmt.Printf("Sign PostFund state by participant [%d]\n", p.Index)
 	}
 	fmt.Println(color.HiYellowString("\nPostFund state: "))
-	fmt.Println(color.GreenString("App Data: %v", ch.LastState.AppData))
-	fmt.Println(color.GreenString("Turn Number: %d", ch.LastState.TurnNum))
-	fmt.Println(color.GreenString("Is Final:  %v\n", ch.LastState.IsFinal))
+	fmt.Println(color.GreenString("App Data: %v", ch.CurrentState().AppData))
+	fmt.Println(color.GreenString("Turn Number: %d", ch.CurrentState().TurnNum))
+	fmt.Println(color.GreenString("Is Final:  %v\n", ch.CurrentState().IsFinal))
 	fmt.Println("PostFund state has been completed\n")
 
 	return nil
@@ -198,9 +198,9 @@ func proposeState(
 				return err
 			}
 
-			st.State.AppData = appData
+			st.SetAppData(appData)
 
-			liabilityState, err := protocol.DecodeLiabilityFromBytes(st.State.AppData)
+			liabilityState, err := protocol.DecodeLiabilityFromBytes(st.AppData())
 			if err != nil {
 				return err
 			}
@@ -210,8 +210,8 @@ func proposeState(
 			color.Set(color.FgGreen)
 			liabilityState.Print()
 			color.Unset()
-			fmt.Println(color.GreenString("Turn Number: %d", st.State.TurnNum))
-			fmt.Println(color.GreenString("Is Final:  %v\n", st.State.IsFinal))
+			fmt.Println(color.GreenString("Turn Number: %d", st.TurnNum()))
+			fmt.Println(color.GreenString("Is Final:  %v\n", st.IsFinal()))
 
 			for p, pKey := range privKeys {
 				_, err := ch.SignState(st, pKey)
@@ -228,7 +228,7 @@ func proposeState(
 
 func proposeLiability(ch protocol.Channel) ([]byte, bool, error) {
 	ok := false
-	lastState := ch.LastState
+	lastState := ch.CurrentState()
 	sp, err := protocol.NewStateProposal(&state.State{AppData: lastState.AppData})
 	if err != nil {
 		return []byte{}, ok, err
@@ -302,7 +302,7 @@ func proposeLiability(ch protocol.Channel) ([]byte, bool, error) {
 		ok = true
 	}
 
-	return sp.State.AppData, ok, nil
+	return sp.AppData(), ok, nil
 }
 
 func concludeChannel(
@@ -323,7 +323,7 @@ func concludeChannel(
 	}
 	finalState.SetFinal()
 
-	liabilityState, err := protocol.DecodeLiabilityFromBytes(finalState.State.AppData)
+	liabilityState, err := protocol.DecodeLiabilityFromBytes(finalState.AppData())
 
 	fmt.Println(color.HiYellowString("\nFinal state: "))
 	if err == nil {
@@ -332,11 +332,11 @@ func concludeChannel(
 		liabilityState.Print()
 		color.Unset()
 	} else {
-		fmt.Println(color.GreenString("App Data: %v", ch.LastState.AppData))
+		fmt.Println(color.GreenString("App Data: %v", ch.CurrentState().AppData))
 	}
 
-	fmt.Println(color.GreenString("Turn Number: %d", ch.LastState.TurnNum))
-	fmt.Println(color.GreenString("Is Final:  %v\n", ch.LastState.IsFinal))
+	fmt.Println(color.GreenString("Turn Number: %d", ch.CurrentState().TurnNum))
+	fmt.Println(color.GreenString("Is Final:  %v\n", ch.CurrentState().IsFinal))
 
 	participantSignatures := make(map[common.Address]crypto.Signature)
 	for p, pKey := range privKeys {

@@ -20,7 +20,7 @@ type InitProposal struct {
 func NewInitProposal(p Participant, contract Contract) *InitProposal {
 	channelNonce := big.NewInt(time.Now().UnixMilli())
 	// Build initial state, called PreFund state in go-nitro
-	state := BuildState(contract, []Participant{p}, channelNonce, []byte{}, 0, false)
+	state := buildState(contract, []Participant{p}, channelNonce, []byte{}, 0, false)
 
 	return &InitProposal{
 		Contract:     contract,

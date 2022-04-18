@@ -26,36 +26,36 @@ func TestSetFinal(t *testing.T) {
 	assert.NoError(t, err)
 	stateProposal.SetFinal()
 
-	assert.Equal(t, true, stateProposal.State.IsFinal)
+	assert.Equal(t, true, stateProposal.IsFinal())
 }
 
 func TestSetAppData(t *testing.T) {
 	stateProposal, err := getStateProposal()
 	assert.NoError(t, err)
-	assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.State.AppData)
+	assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.AppData())
 
 	appData := []byte{1, 2, 3}
 	stateProposal.SetAppData(appData)
 
 	expectedResult := types.Bytes(types.Bytes{0x1, 0x2, 0x3})
-	assert.Equal(t, expectedResult, stateProposal.State.AppData)
+	assert.Equal(t, expectedResult, stateProposal.AppData())
 }
 
 func TestAddLiability(t *testing.T) {
 	t.Run("add liability to state without app data", func(t *testing.T) {
 		stateProposal, err := getStateProposal()
 		assert.NoError(t, err)
-		assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.State.AppData)
+		assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.AppData())
 
 		stateProposal.RequestLiability(0, 1, "ETH", decimal.NewFromFloat(2))
 		stateProposal.ApproveLiabilities()
-		assert.NotEmpty(t, stateProposal.State.AppData)
+		assert.NotEmpty(t, stateProposal.AppData())
 	})
 
 	t.Run("add liability to state with app data", func(t *testing.T) {
 		stateProposal, err := getStateProposal()
 		assert.NoError(t, err)
-		assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.State.AppData)
+		assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.AppData())
 
 		err = stateProposal.RequestLiability(0, 1, "ETH", decimal.NewFromFloat(2))
 		assert.NoError(t, err)
@@ -71,7 +71,7 @@ func TestAddLiability(t *testing.T) {
 		err = stateProposal.ApproveLiabilities()
 		assert.NoError(t, err)
 
-		liability, err := DecodeLiabilityFromBytes(stateProposal.State.AppData)
+		liability, err := DecodeLiabilityFromBytes(stateProposal.AppData())
 		assert.NoError(t, err)
 
 		expectedLiability := NewLiability()

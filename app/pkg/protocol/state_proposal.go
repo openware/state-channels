@@ -7,9 +7,9 @@ import (
 	"github.com/statechannels/go-nitro/channel/state"
 )
 
-// State Proposal represents information about proposed state.
+// StateProposal represents information about proposed state.
 type StateProposal struct {
-	State          *state.State
+	state          *state.State
 	liabilityState *LiabilityState
 }
 
@@ -23,19 +23,34 @@ func NewStateProposal(state *state.State) (*StateProposal, error) {
 	}
 
 	return &StateProposal{
-		State:          state,
+		state:          state,
 		liabilityState: liabilityState,
 	}, nil
 }
 
+// TurnNum returns proposed state turn num.
+func (sp *StateProposal) TurnNum() uint64 {
+	return sp.state.TurnNum
+}
+
 // SetFinal sets proposed state to final.
 func (sp *StateProposal) SetFinal() {
-	sp.State.IsFinal = true
+	sp.state.IsFinal = true
+}
+
+// IsFinal returns either proposed state is final or not.
+func (sp *StateProposal) IsFinal() bool {
+	return sp.state.IsFinal
+}
+
+// AppData returns proposed state app data.
+func (sp *StateProposal) AppData() []byte {
+	return sp.state.AppData
 }
 
 // SetFinal sets proposed state with appData.
 func (sp *StateProposal) SetAppData(appData []byte) {
-	sp.State.AppData = appData
+	sp.state.AppData = appData
 }
 
 // RequestLiability add request liability to state proposal.
@@ -60,7 +75,7 @@ func (sp *StateProposal) ApproveLiabilities() error {
 		return err
 	}
 
-	sp.State.AppData = appDataBytes
+	sp.state.AppData = appDataBytes
 
 	return nil
 }

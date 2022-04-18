@@ -8,8 +8,8 @@ import (
 	"github.com/statechannels/go-nitro/types"
 )
 
-// ConcludeParams represents information for state channel finalization.
-type ConcludeParams struct {
+// concludeParams represents information for state channel finalization.
+type concludeParams struct {
 	OutcomeState  types.Bytes
 	AppData       types.Bytes
 	Signatures    []nitro.IForceMoveSignature
@@ -18,11 +18,11 @@ type ConcludeParams struct {
 	WhoSignedWhat []uint8
 }
 
-// BuildConcludeParams builds conclude params for state channel finalization.
-func BuildConcludeParams(s state.State, participantSignatures map[common.Address]state.Signature) (ConcludeParams, error) {
+// buildConcludeParams builds conclude params for state channel finalization.
+func buildConcludeParams(s state.State, participantSignatures map[common.Address]state.Signature) (concludeParams, error) {
 	outcomeState, err := s.Outcome.Encode()
 	if err != nil {
-		return ConcludeParams{}, err
+		return concludeParams{}, err
 	}
 
 	appData := s.VariablePart().AppData
@@ -48,7 +48,7 @@ func BuildConcludeParams(s state.State, participantSignatures map[common.Address
 		whoSignedWhat = append(whoSignedWhat, uint8(0))
 	}
 
-	params := ConcludeParams{
+	params := concludeParams{
 		OutcomeState:  outcomeState,
 		AppData:       appData,
 		Signatures:    moveSignatures,

@@ -18,9 +18,9 @@ type GasStation struct {
 	GasLimit uint64
 }
 
-// SignTransaction adds a participant signature to the transaction.
+// signTransaction adds a participant signature to the transaction.
 // An error is thrown if the signature is invalid.
-func SignTransaction(chainID *big.Int, privateKey []byte) (signerFn bind.SignerFn) {
+func signTransaction(chainID *big.Int, privateKey []byte) (signerFn bind.SignerFn) {
 	signerFn = func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
 		signer := types.LatestSignerForChainID(chainID)
 		hash := signer.Hash(tx)

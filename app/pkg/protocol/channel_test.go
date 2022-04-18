@@ -34,7 +34,7 @@ func TestInitChannel(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, proposal, &ch.initProposal)
-		assert.Equal(t, proposal.State, ch.LastState)
+		assert.Equal(t, proposal.State, ch.lastState)
 	})
 
 	t.Run("unsuccessful channel initialization", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestApproveChannelInit(t *testing.T) {
 			_, err := ch.ApproveInitChannel(key)
 			assert.NoError(t, err)
 		}
-		assert.Equal(t, uint64(0), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(0), ch.lastState.TurnNum)
 
 		// Post fund state
 		for _, key := range privKeys {
@@ -83,7 +83,7 @@ func TestApproveChannelInit(t *testing.T) {
 			assert.NoError(t, err)
 		}
 
-		assert.Equal(t, uint64(1), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(1), ch.lastState.TurnNum)
 
 		//try to approve channel initialization
 		for _, key := range privKeys {
@@ -136,7 +136,7 @@ func TestApproveChannelFunding(t *testing.T) {
 			_, err := ch.ApproveInitChannel(key)
 			assert.NoError(t, err)
 		}
-		assert.Equal(t, uint64(0), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(0), ch.lastState.TurnNum)
 
 		privKeys[*participant1] = []byte{}
 		privKeys[*participant2] = []byte{}
@@ -161,14 +161,14 @@ func TestApproveChannelFunding(t *testing.T) {
 			_, err := ch.ApproveInitChannel(key)
 			assert.NoError(t, err)
 		}
-		assert.Equal(t, uint64(0), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(0), ch.lastState.TurnNum)
 
 		// Post fund state
 		for _, key := range privKeys {
 			_, err := ch.ApproveChannelFunding(key)
 			assert.NoError(t, err)
 		}
-		assert.Equal(t, uint64(1), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(1), ch.lastState.TurnNum)
 
 		// try to approve channel funding again
 		for _, key := range privKeys {
@@ -188,14 +188,14 @@ func TestApproveChannelFunding(t *testing.T) {
 			_, err := ch.ApproveInitChannel(key)
 			assert.NoError(t, err)
 		}
-		assert.Equal(t, uint64(0), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(0), ch.lastState.TurnNum)
 
 		// Post fund state
 		for _, key := range privKeys {
 			_, err := ch.ApproveChannelFunding(key)
 			assert.NoError(t, err)
 		}
-		assert.Equal(t, uint64(1), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(1), ch.lastState.TurnNum)
 	})
 }
 
@@ -212,23 +212,23 @@ func TestProposeState(t *testing.T) {
 		_, err := ch.ApproveInitChannel(key)
 		assert.NoError(t, err)
 	}
-	assert.Equal(t, uint64(0), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(0), ch.lastState.TurnNum)
 
 	// Post fund state
 	for _, key := range privKeys {
 		_, err := ch.ApproveChannelFunding(key)
 		assert.NoError(t, err)
 	}
-	assert.Equal(t, uint64(1), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(1), ch.lastState.TurnNum)
 
 	t.Run("propose state", func(t *testing.T) {
 		_, err = ch.ProposeState()
 		assert.NoError(t, err)
-		assert.Equal(t, uint64(2), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(2), ch.lastState.TurnNum)
 
 		_, err = ch.ProposeState()
 		assert.NoError(t, err)
-		assert.Equal(t, uint64(3), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(3), ch.lastState.TurnNum)
 	})
 }
 
@@ -245,18 +245,18 @@ func TestSignState(t *testing.T) {
 		_, err := ch.ApproveInitChannel(key)
 		assert.NoError(t, err)
 	}
-	assert.Equal(t, uint64(0), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(0), ch.lastState.TurnNum)
 
 	// Post fund state
 	for _, key := range privKeys {
 		_, err := ch.ApproveChannelFunding(key)
 		assert.NoError(t, err)
 	}
-	assert.Equal(t, uint64(1), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(1), ch.lastState.TurnNum)
 
 	stateProposal, err := ch.ProposeState()
 	assert.NoError(t, err)
-	assert.Equal(t, uint64(2), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(2), ch.lastState.TurnNum)
 
 	t.Run("invalid keys", func(t *testing.T) {
 		privKeys[*participant1] = []byte{}
@@ -276,7 +276,7 @@ func TestSignState(t *testing.T) {
 			_, err := ch.SignState(stateProposal, key)
 			assert.NoError(t, err)
 		}
-		assert.Equal(t, uint64(2), ch.LastState.TurnNum)
+		assert.Equal(t, uint64(2), ch.lastState.TurnNum)
 	})
 }
 
@@ -293,18 +293,18 @@ func TestConcludeChannel(t *testing.T) {
 		_, err := ch.ApproveInitChannel(key)
 		assert.NoError(t, err)
 	}
-	assert.Equal(t, uint64(0), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(0), ch.lastState.TurnNum)
 
 	// Post fund state
 	for _, key := range privKeys {
 		_, err := ch.ApproveChannelFunding(key)
 		assert.NoError(t, err)
 	}
-	assert.Equal(t, uint64(1), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(1), ch.lastState.TurnNum)
 
 	stateProposal, err := ch.ProposeState()
 	assert.NoError(t, err)
-	assert.Equal(t, uint64(2), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(2), ch.lastState.TurnNum)
 
 	participantSignatures := make(map[common.Address]crypto.Signature)
 	for p, key := range privKeys {
@@ -312,7 +312,7 @@ func TestConcludeChannel(t *testing.T) {
 		assert.NoError(t, err)
 		participantSignatures[p.Address] = signature
 	}
-	assert.Equal(t, uint64(2), ch.LastState.TurnNum)
+	assert.Equal(t, uint64(2), ch.lastState.TurnNum)
 
 	t.Run("not final state", func(t *testing.T) {
 		_, err = ch.Conclude(*participant1, privKeys[*participant1], participantSignatures)
