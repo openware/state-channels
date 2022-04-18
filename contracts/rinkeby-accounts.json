@@ -1,0 +1,20 @@
+{
+	"accounts": [
+		{
+			"privateKey": "0x0cd38cf79b7df75eca87d98a31a17049024fed7bd378a00f1a5c9ec0990734cb",
+			"address": "0x9d8675006de0E0aB50c8FfA98da454e71f22df01"
+		},
+		{
+			"privateKey": "0x8f7b1ebe9974af4babc2c6881ff16fcaf4294d9bd70228136bf8ca105dbdf584",
+			"address": "0x8E9C0DDEE99b601A8A96a5fcc7E7Cc5188fad682"
+		},
+		{
+			"privateKey": "0x738ef338f7d1eefb252bf48e83aa23fec76cb58b2ad68ec629ab5df9294d9cfd",
+			"address": "0x3B87b7835d4B85F2001CB8b552b5d123F5aFDE13"
+		},
+		{
+			"privateKey": "0x6fa6d2b76e5b403d86202636b20eda501922d713722777dd9baf3fc969545170",
+			"address": "0xb54b87B658a5EF285AB2401AD9e0E76c20A1D625"
+		}
+	]
+}

@@ -1,12 +1,11 @@
-import * as dotenv from "dotenv";
-
-import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
+import * as dotenv from "dotenv";
 import "hardhat-deploy";
+import "hardhat-gas-reporter";
+import { HardhatUserConfig, task } from "hardhat/config";
+import "solidity-coverage";
 
 dotenv.config();
 
@@ -44,7 +43,7 @@ const config: HardhatUserConfig = {
       'contracts/examples/EmbeddedApplication.sol': {
         version: '0.7.4',
         settings: {
-          optimizer: {enabled: false},
+          optimizer: { enabled: false },
         },
       },
     },
@@ -76,9 +75,9 @@ const config: HardhatUserConfig = {
       chainId: 3,
     },
     rinkeby: {
-      url: process.env.RINKEBY_URL || '',
+      url: process.env.RINKEBY_URL || "",
       accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        process.env.RINKEBY_PRIVATE_KEY !== undefined ? [process.env.RINKEBY_PRIVATE_KEY] : [],
       chainId: 4,
     },
   },

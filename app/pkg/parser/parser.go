@@ -16,15 +16,13 @@ type VaultAccount struct {
 
 // Contract struct which contains chain ID and SC address
 type Contract struct {
-	ChainIds []struct {
-		Name    string `json:"name"`
-		ChainId string `json:"chainId"`
-		SC      struct {
-			NitroAdj struct {
-				Address string `json:"address"`
-			} `json:"NitroAdjudicator"`
-		} `json:"contracts"`
-	} `json:"1337"`
+	Name    string `json:"name"`
+	ChainId string `json:"chainId"`
+	SC      struct {
+		NitroAdj struct {
+			Address string `json:"address"`
+		} `json:"NitroAdjudicator"`
+	} `json:"contracts"`
 }
 
 func ToVaultAccount(file string) (VaultAccount, error) {
@@ -43,18 +41,21 @@ func ToVaultAccount(file string) (VaultAccount, error) {
 	return accounts, nil
 }
 
-func ToContract(file string) (Contract, error) {
+func ToContract(file string) (map[string][]Contract, error) {
 	jsonFile, err := os.Open(file)
 	if err != nil {
-		return Contract{}, nil
+		return map[string][]Contract{}, err
 	}
 
 	defer jsonFile.Close()
 
+	contract := make(map[string][]Contract)
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var result Contract
-	json.Unmarshal([]byte(byteValue), &result)
+	err = json.Unmarshal(byteValue, &contract)
+	if err != nil {
+		return map[string][]Contract{}, err
+	}
 
-	return result, err
+	return contract, nil
 }
