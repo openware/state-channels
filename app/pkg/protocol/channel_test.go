@@ -21,7 +21,7 @@ func getChannel() (*Channel, error) {
 	proposal := NewInitProposal(*participant1, *contract)
 	proposal.AddParticipant(*participant2)
 
-	ch, err := InitChannel(*proposal, 0)
+	ch, err := InitChannel(proposal, 0)
 	return ch, err
 }
 func TestInitChannel(t *testing.T) {
@@ -30,7 +30,7 @@ func TestInitChannel(t *testing.T) {
 		contract := NewContract(nitro.Client{ChainID: big.NewInt(2)}, common.HexToAddress("0x"))
 		proposal := NewInitProposal(*participant, *contract)
 
-		ch, err := InitChannel(*proposal, 0)
+		ch, err := InitChannel(proposal, 0)
 
 		assert.NoError(t, err)
 		assert.Equal(t, proposal, &ch.initProposal)
@@ -43,7 +43,7 @@ func TestInitChannel(t *testing.T) {
 		proposal := NewInitProposal(*participant, *contract)
 		proposal.State.TurnNum = uint64(5)
 
-		_, err := InitChannel(*proposal, 0)
+		_, err := InitChannel(proposal, 0)
 		assert.Error(t, err)
 	})
 }
@@ -85,7 +85,7 @@ func TestApproveChannelInit(t *testing.T) {
 
 		assert.Equal(t, uint64(1), ch.lastState.TurnNum)
 
-		//try to approve channel initialization
+		// try to approve channel initialization
 		for _, key := range privKeys {
 			_, err := ch.ApproveInitChannel(key)
 			assert.Error(t, err, ErrCompletedState)

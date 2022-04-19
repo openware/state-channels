@@ -15,7 +15,7 @@ func SimpleTrade(participants []protocol.Participant, privKeys map[protocol.Part
 		prop.AddParticipant(p)
 	}
 
-	ch, err := protocol.InitChannel(*prop, participants[0].Index)
+	ch, err := protocol.InitChannel(prop, participants[0].Index)
 	if err != nil {
 		return err
 	}

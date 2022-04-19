@@ -9,12 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-// GasStation represents information about gas price, gas limit.
-type GasStation struct {
-	GasPrice *big.Int
-	GasLimit uint64
-}
-
 // signTransaction adds a participant signature to the transaction.
 // An error is thrown if the signature is invalid.
 func signTransaction(chainID *big.Int, privateKey []byte) (signerFn bind.SignerFn) {

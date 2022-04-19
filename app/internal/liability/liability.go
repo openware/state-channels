@@ -97,7 +97,7 @@ func (l *Liability) AddRevertLiability(asset Asset, amount decimal.Decimal) erro
 // 1: REQ: { BTC: 12, ETH: 14 }, ACK: {RTC: 2}
 // 2: REQ: { BTC: 23, GOLD: 25 }, ACK: {USDT: 200}
 // Result: REQ: { BTC: 35, ETH: 14, GOLD: 25 }, ACK: {RTC: 2, USDT: 200}}
-func (l *Liability) Add(newLiability *Liability) {
+func (l *Liability) Add(newLiability Liability) {
 	for lAsset, lAmount := range newLiability.ACK {
 		if val, ok := l.ACK[lAsset]; ok {
 			l.ACK[lAsset] = val.Add(lAmount)
@@ -116,9 +116,9 @@ func (l *Liability) Add(newLiability *Liability) {
 }
 
 // NewLiabilitiesMap creates new liabilityMap from existing liability.
-func NewLiabilitiesMap(index uint, liability *Liability) *LiabilitiesMap {
+func NewLiabilitiesMap(index uint, liability Liability) *LiabilitiesMap {
 	liabilitiesMap := make(map[uint]*Liability)
-	liabilitiesMap[index] = liability
+	liabilitiesMap[index] = &liability
 
 	return &LiabilitiesMap{
 		Liabilities: liabilitiesMap,
@@ -126,12 +126,12 @@ func NewLiabilitiesMap(index uint, liability *Liability) *LiabilitiesMap {
 }
 
 // Add combines liabilityMap with already existing one.
-func (lm *LiabilitiesMap) Add(liabilitiesMap *LiabilitiesMap) {
+func (lm *LiabilitiesMap) Add(liabilitiesMap LiabilitiesMap) {
 	for index, liability := range liabilitiesMap.Liabilities {
 		if lm.Liabilities[index] == nil {
 			lm.Liabilities[index] = liability
 		} else {
-			lm.Liabilities[index].Add(liability)
+			lm.Liabilities[index].Add(*liability)
 		}
 	}
 }
@@ -146,12 +146,12 @@ func NewLiabilityState() *LiabilityState {
 }
 
 // AddLiability combines existing liabilities map with input liability.
-func (ls *LiabilityState) AddLiability(from, to uint, liability *Liability) {
+func (ls *LiabilityState) AddLiability(from, to uint, liability Liability) {
 	lMap := NewLiabilitiesMap(to, liability)
 	if ls.State[from] == nil {
 		ls.State[from] = lMap
 	} else {
-		ls.State[from].Add(lMap)
+		ls.State[from].Add(*lMap)
 	}
 }
 
@@ -159,7 +159,7 @@ func (ls *LiabilityState) AddLiability(from, to uint, liability *Liability) {
 func (ls *LiabilityState) AddRequestLiability(from, to uint, asset Asset, amount decimal.Decimal) error {
 	liability := NewLiability()
 	liability.AddRequestLiability(asset, amount)
-	ls.AddLiability(from, to, liability)
+	ls.AddLiability(from, to, *liability)
 
 	return nil
 }
@@ -195,12 +195,12 @@ func (ls *LiabilityState) AddRevertLiability(from, to uint, asset Asset, amount 
 }
 
 // MergeLiabilityState adds liabilityMap to already existing one.
-func (ls *LiabilityState) MergeLiabilityState(newLiabilitiesState *LiabilityState) *LiabilityState {
+func (ls *LiabilityState) MergeLiabilityState(newLiabilitiesState LiabilityState) *LiabilityState {
 	for index, liability := range newLiabilitiesState.State {
 		if ls.State[index] == nil {
 			ls.State[index] = liability
 		} else {
-			ls.State[index].Add(liability)
+			ls.State[index].Add(*liability)
 		}
 	}
 

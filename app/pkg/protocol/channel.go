@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/statechannels/go-nitro/channel"
+	chl "github.com/statechannels/go-nitro/channel"
 	"github.com/statechannels/go-nitro/channel/state"
 )
 
@@ -23,20 +23,20 @@ var (
 
 // Channel represents information about current state, channel info.
 type Channel struct {
-	initProposal InitProposal
+	initProposal *InitProposal
 	lastState    *state.State
-	c            *channel.Channel
+	c            chl.Channel
 }
 
 // InitChannel opens channel with participant who was requested opening a channel.
-func InitChannel(initProposal InitProposal, participantIndex uint) (*Channel, error) {
-	c, err := channel.New(*initProposal.State, participantIndex)
+func InitChannel(initProposal *InitProposal, participantIndex uint) (*Channel, error) {
+	c, err := chl.New(*initProposal.State, participantIndex)
 	if err != nil {
 		return &Channel{}, err
 	}
 
 	return &Channel{
-		c:            &c,
+		c:            c,
 		initProposal: initProposal,
 		lastState:    initProposal.State,
 	}, nil
@@ -49,7 +49,8 @@ func (channel *Channel) ApproveInitChannel(privateKey []byte) (state.Signature, 
 		return state.Signature{}, ErrCompletedState
 	}
 
-	signature, err := channel.signState(channel.c.PreFundState(), privateKey)
+	preFundState := channel.c.PreFundState()
+	signature, err := channel.signState(&preFundState, privateKey)
 	if err != nil {
 		return state.Signature{}, err
 	}
@@ -100,7 +101,7 @@ func (channel *Channel) ApproveChannelFunding(privateKey []byte) (state.Signatur
 	}
 
 	postFundState := channel.c.PostFundState()
-	signature, err := channel.signState(postFundState, privateKey)
+	signature, err := channel.signState(&postFundState, privateKey)
 	if err != nil {
 		return state.Signature{}, err
 	}
@@ -131,7 +132,7 @@ func (channel *Channel) ProposeState() (*StateProposal, error) {
 // SignState adds a participant's signature to the proposed state and returns signed state signature.
 // An error is thrown if the signature is invalid.
 func (channel *Channel) SignState(stateProposal *StateProposal, privateKey []byte) (state.Signature, error) {
-	signature, err := channel.signState(*stateProposal.state, privateKey)
+	signature, err := channel.signState(stateProposal.state, privateKey)
 	if err != nil {
 		return state.Signature{}, err
 	}
@@ -164,7 +165,7 @@ func (channel *Channel) Conclude(p Participant, privateKey []byte, participantSi
 	}
 
 	finalTurnNum := big.NewInt(int64(channel.lastState.TurnNum))
-	concludeParams, err := buildConcludeParams(*lastState, participantSignatures)
+	concludeParams, err := buildConcludeParams(lastState, participantSignatures)
 	if err != nil {
 		return &types.Transaction{}, err
 	}
@@ -188,7 +189,7 @@ func (channel *Channel) Conclude(p Participant, privateKey []byte, participantSi
 
 // CheckSignature returns true if signature is valid, existing in state channel participant list and
 // connected to the specific state, false otherwise.
-func (channel *Channel) CheckSignature(signature state.Signature, s state.State) (bool, error) {
+func (channel *Channel) CheckSignature(signature state.Signature, s *state.State) (bool, error) {
 	address, err := s.RecoverSigner(signature)
 	if err != nil {
 		return false, err
@@ -235,13 +236,13 @@ func (channel *Channel) StateIsFinal() bool {
 
 // signState adds a participant's signature to the newState.
 // An error is thrown if the signature is invalid.
-func (channel *Channel) signState(newState state.State, privateKey []byte) (state.Signature, error) {
+func (channel *Channel) signState(newState *state.State, privateKey []byte) (state.Signature, error) {
 	signature, err := newState.Sign(privateKey)
 	if err != nil {
 		return state.Signature{}, err
 	}
 
-	ok := channel.c.AddStateWithSignature(newState, signature)
+	ok := channel.c.AddStateWithSignature(*newState, signature)
 	if !ok {
 		return state.Signature{}, ErrInvalidSignature
 	}

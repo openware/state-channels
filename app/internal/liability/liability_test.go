@@ -117,7 +117,7 @@ func TestLiability(t *testing.T) {
 		err = liability2.AddAcknowledgeLiability("LTC", decimal.NewFromFloat(2))
 		assert.NoError(t, err)
 
-		liability1.Add(liability2)
+		liability1.Add(*liability2)
 
 		expectedResult := Liability{
 			REQ: map[Asset]decimal.Decimal{
@@ -142,7 +142,7 @@ func TestLiabilityMap(t *testing.T) {
 	t.Run("creates new liabilityMap", func(t *testing.T) {
 		liability := NewLiability()
 		liability.AddRequestLiability("BTC", decimal.NewFromFloat(1))
-		liabilityMap := NewLiabilitiesMap(0, liability)
+		liabilityMap := NewLiabilitiesMap(0, *liability)
 
 		assert.NotEmpty(t, liabilityMap)
 		assert.Equal(t, liability, liabilityMap.Liabilities[0])
@@ -162,15 +162,15 @@ func TestLiabilityMap(t *testing.T) {
 		err = liability3.AddAcknowledgeLiability("LTC", decimal.NewFromFloat(10))
 		assert.NoError(t, err)
 
-		liabilityMap1 := NewLiabilitiesMap(0, liability1)
-		liabilityMap2 := NewLiabilitiesMap(1, liability2)
-		liabilityMap3 := NewLiabilitiesMap(0, liability3)
+		liabilityMap1 := NewLiabilitiesMap(0, *liability1)
+		liabilityMap2 := NewLiabilitiesMap(1, *liability2)
+		liabilityMap3 := NewLiabilitiesMap(0, *liability3)
 
-		liabilityMap1.Add(liabilityMap2)
-		liabilityMap1.Add(liabilityMap3)
+		liabilityMap1.Add(*liabilityMap2)
+		liabilityMap1.Add(*liabilityMap3)
 
 		resultLiability := liability1
-		resultLiability.Add(liability3)
+		resultLiability.Add(*liability3)
 
 		assert.Equal(t, len(liabilityMap1.Liabilities), 2)
 		assert.Equal(t, liability2, liabilityMap1.Liabilities[1])
@@ -192,16 +192,16 @@ func TestLiabilityState(t *testing.T) {
 		liability1.AddRequestLiability("BTC", decimal.NewFromFloat(2))
 		liability1.AddRequestLiability("ETH", decimal.NewFromFloat(0.1))
 
-		state1.AddLiability(0, 1, liability1)
+		state1.AddLiability(0, 1, *liability1)
 		assert.Equal(t, liability1, state1.State[0].Liabilities[1])
 
 		liability2 := NewLiability()
 		liability2.AddRequestLiability("BTC", decimal.NewFromFloat(2))
 		liability2.AddRequestLiability("LTC", decimal.NewFromFloat(0.1))
 
-		state1.AddLiability(0, 1, liability2)
+		state1.AddLiability(0, 1, *liability2)
 
-		liability1.Add(liability2)
+		liability1.Add(*liability2)
 		assert.Equal(t, liability1, state1.State[0].Liabilities[1])
 	})
 
@@ -209,14 +209,14 @@ func TestLiabilityState(t *testing.T) {
 		liability1 := NewLiability()
 		liability1.AddRequestLiability("ETH", decimal.NewFromFloat(0.4))
 		state1 := NewLiabilityState()
-		state1.AddLiability(0, 1, liability1)
+		state1.AddLiability(0, 1, *liability1)
 
 		liability2 := NewLiability()
 		liability2.AddRequestLiability("BTC", decimal.NewFromFloat(2))
 		state2 := NewLiabilityState()
-		state2.AddLiability(0, 2, liability2)
+		state2.AddLiability(0, 2, *liability2)
 
-		state1.MergeLiabilityState(state2)
+		state1.MergeLiabilityState(*state2)
 
 		assert.Equal(t, liability1, state1.State[0].Liabilities[1])
 		assert.Equal(t, liability2, state1.State[0].Liabilities[2])
@@ -224,10 +224,10 @@ func TestLiabilityState(t *testing.T) {
 		liability3 := NewLiability()
 		liability3.AddRequestLiability("BTC", decimal.NewFromFloat(2))
 		state3 := NewLiabilityState()
-		state3.AddLiability(0, 2, liability3)
+		state3.AddLiability(0, 2, *liability3)
 
-		liability2.Add(liability3)
-		state1.MergeLiabilityState(state3)
+		liability2.Add(*liability3)
+		state1.MergeLiabilityState(*state3)
 		assert.Equal(t, liability2, state1.State[0].Liabilities[2])
 	})
 
@@ -293,7 +293,7 @@ func TestLiabilityState(t *testing.T) {
 		liability.AddRequestLiability("ETH", decimal.NewFromFloat(0.4))
 
 		state := NewLiabilityState()
-		state.AddLiability(0, 1, liability)
+		state.AddLiability(0, 1, *liability)
 
 		bytes, err := state.EncodeToBytes()
 
@@ -306,7 +306,7 @@ func TestLiabilityState(t *testing.T) {
 		liability.AddRequestLiability("ETH", decimal.NewFromFloat(0.4))
 
 		state := NewLiabilityState()
-		state.AddLiability(0, 1, liability)
+		state.AddLiability(0, 1, *liability)
 		bytes, err := state.EncodeToBytes()
 		assert.NoError(t, err)
 
