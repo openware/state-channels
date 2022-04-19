@@ -1,15 +1,12 @@
 package protocol
 
 import (
-	"context"
 	"math/big"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 // GasStation represents information about gas price, gas limit.
@@ -39,17 +36,4 @@ func signTransaction(chainID *big.Int, privateKey []byte) (signerFn bind.SignerF
 	}
 
 	return
-}
-
-// CalculateGasPrice calculates gas price.
-func CalculateGasPrice(ethClient *ethclient.Client) (*big.Int, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	gasPrice, err := ethClient.SuggestGasPrice(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return gasPrice, nil
 }

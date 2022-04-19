@@ -1,23 +1,25 @@
 package protocol
 
 import (
+	"app/internal/liability"
 	"errors"
 
 	"github.com/shopspring/decimal"
 	"github.com/statechannels/go-nitro/channel/state"
+	"github.com/statechannels/go-nitro/types"
 )
 
 // StateProposal represents information about proposed state.
 type StateProposal struct {
 	state          *state.State
-	liabilityState *LiabilityState
+	liabilityState *liability.LiabilityState
 }
 
 // NewStateProposal creates state proposal from state.
 func NewStateProposal(state *state.State) (*StateProposal, error) {
-	liabilityState, err := DecodeLiabilityFromBytes(state.AppData)
-	if errors.Is(err, ErrEmptyByteArray) {
-		liabilityState = NewLiabilityState()
+	liabilityState, err := liability.DecodeFromBytes(state.AppData)
+	if errors.Is(err, liability.ErrEmptyByteArray) {
+		liabilityState = liability.NewLiabilityState()
 	} else if err != nil {
 		return &StateProposal{}, err
 	}
@@ -44,7 +46,7 @@ func (sp *StateProposal) IsFinal() bool {
 }
 
 // AppData returns proposed state app data.
-func (sp *StateProposal) AppData() []byte {
+func (sp *StateProposal) AppData() types.Bytes {
 	return sp.state.AppData
 }
 
@@ -53,18 +55,23 @@ func (sp *StateProposal) SetAppData(appData []byte) {
 	sp.state.AppData = appData
 }
 
+// LiabilityState returns proposed state liability.
+func (sp *StateProposal) LiabilityState() liability.LiabilityState {
+	return *sp.liabilityState
+}
+
 // RequestLiability add request liability to state proposal.
-func (sp *StateProposal) RequestLiability(from, to uint, asset Asset, amount decimal.Decimal) error {
+func (sp *StateProposal) RequestLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
 	return sp.liabilityState.AddRequestLiability(from, to, asset, amount)
 }
 
 // AcknowledgeLiability add acknowledge liability to state proposal.
-func (sp *StateProposal) AcknowledgeLiability(from, to uint, asset Asset, amount decimal.Decimal) error {
+func (sp *StateProposal) AcknowledgeLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
 	return sp.liabilityState.AddAcknowledgeLiability(from, to, asset, amount)
 }
 
 // RevertLiability add revert liability to state proposal.
-func (sp *StateProposal) RevertLiability(from, to uint, asset Asset, amount decimal.Decimal) error {
+func (sp *StateProposal) RevertLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
 	return sp.liabilityState.AddRevertLiability(from, to, asset, amount)
 }
 
