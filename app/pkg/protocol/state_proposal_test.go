@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"app/internal/liability"
 	"app/pkg/nitro"
 	"math/big"
 	"testing"
@@ -71,15 +72,10 @@ func TestAddLiability(t *testing.T) {
 		err = stateProposal.ApproveLiabilities()
 		assert.NoError(t, err)
 
-		liability, err := DecodeLiabilityFromBytes(stateProposal.AppData())
+		liab, err := liability.DecodeFromBytes(stateProposal.AppData())
 		assert.NoError(t, err)
 
-		expectedLiability := NewLiability()
-		expectedLiability.AddRequestLiability("ETH", decimal.NewFromFloat(2))
-		expectedLiability.AddRequestLiability("LTC", decimal.NewFromFloat(2))
-		err = expectedLiability.AddAcknowledgeLiability("LTC", decimal.NewFromFloat(2))
-		assert.NoError(t, err)
-
-		assert.Equal(t, expectedLiability, liability.State[0].Liabilities[1])
+		assert.Equal(t, map[liability.Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liab.State[0].Liabilities[1].REQ)
+		assert.Equal(t, map[liability.Asset]decimal.Decimal{"LTC": decimal.NewFromFloat(2)}, liab.State[0].Liabilities[1].ACK)
 	})
 }

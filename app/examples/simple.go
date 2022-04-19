@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"app/pkg/eth/gasprice"
 	"app/pkg/protocol"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -28,12 +29,12 @@ func Simple(participants []protocol.Participant, privKeys map[protocol.Participa
 		}
 	}
 
-	estimatedGasPrice, err := protocol.CalculateGasPrice(contract.Client.Eth)
+	estimatedGasPrice, err := gasprice.Calculate(contract.Client.Eth)
 	if err != nil {
 		return err
 	}
 
-	gasStation := protocol.GasStation{GasPrice: estimatedGasPrice}
+	gasStation := gasprice.Station{GasPrice: estimatedGasPrice}
 
 	for _, p := range participants {
 		_, err = ch.FundChannel(p, privKeys[p], gasStation)

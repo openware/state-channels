@@ -2,8 +2,8 @@ package main
 
 import (
 	"app/examples"
+	"app/internal/parser"
 	"app/pkg/nitro"
-	"app/pkg/parser"
 	"app/pkg/protocol"
 	"math/big"
 	"os"

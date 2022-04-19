@@ -1,4 +1,4 @@
-package protocol
+package liability
 
 import (
 	"bytes"
@@ -230,8 +230,8 @@ func (ls *LiabilityState) EncodeToBytes() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// DecodeLiabilityFromBytes tranform bytes to liabilityState struct.
-func DecodeLiabilityFromBytes(liabilityData []byte) (*LiabilityState, error) {
+// DecodeFromBytes tranform bytes to liabilityState struct.
+func DecodeFromBytes(liabilityData []byte) (*LiabilityState, error) {
 	if len(liabilityData) == 0 {
 		return &LiabilityState{}, ErrEmptyByteArray
 	}

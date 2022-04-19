@@ -1,4 +1,4 @@
-package protocol
+package liability
 
 import (
 	"fmt"
@@ -310,7 +310,7 @@ func TestLiabilityState(t *testing.T) {
 		bytes, err := state.EncodeToBytes()
 		assert.NoError(t, err)
 
-		decodedState, err := DecodeLiabilityFromBytes(bytes)
+		decodedState, err := DecodeFromBytes(bytes)
 		assert.NoError(t, err)
 		assert.Equal(t, state, decodedState)
 	})

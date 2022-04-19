@@ -1,6 +1,8 @@
 package examples
 
 import (
+	"app/internal/liability"
+	"app/pkg/eth/gasprice"
 	"app/pkg/protocol"
 	"fmt"
 	"strconv"
@@ -15,12 +17,12 @@ import (
 )
 
 func Demo(participants []protocol.Participant, privKeys map[protocol.Participant][]byte, contract *protocol.Contract) error {
-	estimatedGasPrice, err := protocol.CalculateGasPrice(contract.Client.Eth)
+	estimatedGasPrice, err := gasprice.Calculate(contract.Client.Eth)
 	if err != nil {
 		return err
 	}
 
-	gasStation := protocol.GasStation{GasPrice: estimatedGasPrice}
+	gasStation := gasprice.Station{GasPrice: estimatedGasPrice}
 
 	ch, err := initChannel(participants, privKeys, contract)
 	if err != nil {
@@ -127,7 +129,7 @@ func fundChannel(
 	ch *protocol.Channel,
 	participants []protocol.Participant,
 	privKeys map[protocol.Participant][]byte,
-	gasStation protocol.GasStation) error {
+	gasStation gasprice.Station) error {
 
 	err := confirmPrompt("Fund channel")
 	if err != nil {
@@ -200,7 +202,7 @@ func proposeState(
 
 			st.SetAppData(appData)
 
-			liabilityState, err := protocol.DecodeLiabilityFromBytes(st.AppData())
+			liabilityState, err := liability.DecodeFromBytes(st.AppData())
 			if err != nil {
 				return err
 			}
@@ -281,11 +283,11 @@ func proposeLiability(ch protocol.Channel) ([]byte, bool, error) {
 		}
 
 		if req == "REQ" {
-			err = sp.RequestLiability(uint(fromNumber), uint(toNumber), protocol.Asset(asset), amountNumber)
+			err = sp.RequestLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
 		} else if req == "ACK" {
-			err = sp.AcknowledgeLiability(uint(fromNumber), uint(toNumber), protocol.Asset(asset), amountNumber)
+			err = sp.AcknowledgeLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
 		} else if req == "REVERT" {
-			err = sp.RevertLiability(uint(fromNumber), uint(toNumber), protocol.Asset(asset), amountNumber)
+			err = sp.RevertLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
 		} else {
 			break
 		}
@@ -309,7 +311,7 @@ func concludeChannel(
 	ch *protocol.Channel,
 	participants []protocol.Participant,
 	privKeys map[protocol.Participant][]byte,
-	gasStation protocol.GasStation) error {
+	gasStation gasprice.Station) error {
 
 	err := confirmPrompt("Finalize channel")
 	if err != nil {
@@ -323,7 +325,7 @@ func concludeChannel(
 	}
 	finalState.SetFinal()
 
-	liabilityState, err := protocol.DecodeLiabilityFromBytes(finalState.AppData())
+	liabilityState, err := liability.DecodeFromBytes(finalState.AppData())
 
 	fmt.Println(color.HiYellowString("\nFinal state: "))
 	if err == nil {
