@@ -19,7 +19,7 @@ type concludeParams struct {
 }
 
 // buildConcludeParams builds conclude params for state channel finalization.
-func buildConcludeParams(s state.State, participantSignatures map[common.Address]state.Signature) (concludeParams, error) {
+func buildConcludeParams(s *state.State, participantSignatures map[common.Address]state.Signature) (concludeParams, error) {
 	outcomeState, err := s.Outcome.Encode()
 	if err != nil {
 		return concludeParams{}, err
@@ -61,7 +61,7 @@ func buildConcludeParams(s state.State, participantSignatures map[common.Address
 }
 
 // forceMoveSignatures forms signatures as IForceMoveSignature type.
-func forceMoveSignatures(s state.State, participantSignatures map[common.Address]state.Signature) []nitro.IForceMoveSignature {
+func forceMoveSignatures(s *state.State, participantSignatures map[common.Address]state.Signature) []nitro.IForceMoveSignature {
 	var moveSignatures []nitro.IForceMoveSignature
 	var signatureR, signatureS [32]byte
 

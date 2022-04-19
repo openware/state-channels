@@ -6,7 +6,7 @@ import (
 	"github.com/statechannels/go-nitro/types"
 )
 
-// Participant stores information about participant.
+// Participant stores information about user address, destination, amount to be locked, index assigned to user.
 type Participant struct {
 	Address      types.Address
 	Destination  types.Destination

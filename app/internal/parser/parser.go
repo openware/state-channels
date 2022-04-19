@@ -2,7 +2,7 @@ package parser
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 )
 
@@ -33,7 +33,7 @@ func ToVaultAccount(file string) (VaultAccount, error) {
 
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	var accounts VaultAccount
 	json.Unmarshal(byteValue, &accounts)
@@ -50,7 +50,7 @@ func ToContract(file string) (map[string][]Contract, error) {
 	defer jsonFile.Close()
 
 	contract := make(map[string][]Contract)
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	err = json.Unmarshal(byteValue, &contract)
 	if err != nil {
