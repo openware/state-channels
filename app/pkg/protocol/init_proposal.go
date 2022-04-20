@@ -4,14 +4,14 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/statechannels/go-nitro/channel/state"
+	st "github.com/statechannels/go-nitro/channel/state"
 	"github.com/statechannels/go-nitro/channel/state/outcome"
 )
 
 // InitProposal represents information about initial state, contract, participants.
 type InitProposal struct {
 	Participants []Participant
-	State        *state.State
+	State        *st.State
 	Contract     Contract
 	ChannelNonce *big.Int
 }

@@ -68,7 +68,7 @@ func initChannel(
 	}
 
 	fmt.Println("\nChannel initialization...")
-	ch, err := protocol.InitChannel(*prop, participants[0].Index)
+	ch, err := protocol.InitChannel(prop, participants[0].Index)
 	if err != nil {
 		return &protocol.Channel{}, err
 	}
@@ -189,7 +189,7 @@ func proposeState(
 			break
 		}
 
-		appData, ok, err := proposeLiability(*ch)
+		appData, ok, err := proposeLiability(ch)
 		if err != nil {
 			return err
 		}
@@ -228,7 +228,7 @@ func proposeState(
 	return nil
 }
 
-func proposeLiability(ch protocol.Channel) ([]byte, bool, error) {
+func proposeLiability(ch *protocol.Channel) ([]byte, bool, error) {
 	ok := false
 	lastState := ch.CurrentState()
 	sp, err := protocol.NewStateProposal(&state.State{AppData: lastState.AppData})
@@ -282,13 +282,14 @@ func proposeLiability(ch protocol.Channel) ([]byte, bool, error) {
 			break
 		}
 
-		if req == "REQ" {
+		switch req {
+		case "REQ":
 			err = sp.RequestLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
-		} else if req == "ACK" {
+		case "ACK":
 			err = sp.AcknowledgeLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
-		} else if req == "REVERT" {
+		case "REVERT":
 			err = sp.RevertLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
-		} else {
+		default:
 			break
 		}
 

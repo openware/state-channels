@@ -5,18 +5,18 @@ import (
 	"errors"
 
 	"github.com/shopspring/decimal"
-	"github.com/statechannels/go-nitro/channel/state"
+	st "github.com/statechannels/go-nitro/channel/state"
 	"github.com/statechannels/go-nitro/types"
 )
 
 // StateProposal represents information about proposed state.
 type StateProposal struct {
-	state          *state.State
-	liabilityState *liability.LiabilityState
+	state          *st.State
+	liabilityState liability.LiabilityState
 }
 
 // NewStateProposal creates state proposal from state.
-func NewStateProposal(state *state.State) (*StateProposal, error) {
+func NewStateProposal(state *st.State) (*StateProposal, error) {
 	liabilityState, err := liability.DecodeFromBytes(state.AppData)
 	if errors.Is(err, liability.ErrEmptyByteArray) {
 		liabilityState = liability.NewLiabilityState()
@@ -26,7 +26,7 @@ func NewStateProposal(state *state.State) (*StateProposal, error) {
 
 	return &StateProposal{
 		state:          state,
-		liabilityState: liabilityState,
+		liabilityState: *liabilityState,
 	}, nil
 }
 
@@ -57,7 +57,7 @@ func (sp *StateProposal) SetAppData(appData []byte) {
 
 // LiabilityState returns proposed state liability.
 func (sp *StateProposal) LiabilityState() liability.LiabilityState {
-	return *sp.liabilityState
+	return sp.liabilityState
 }
 
 // RequestLiability add request liability to state proposal.

@@ -30,7 +30,7 @@ type StateChannelContract interface {
 type Client struct {
 	Adjudicator StateChannelContract
 	ChainID     *big.Int
-	Eth         *ethclient.Client
+	Eth         ethclient.Client
 }
 
 // NewClient returns a new Client from supplied params.
@@ -53,7 +53,7 @@ func NewClient(contractAddr, rpcUrl string) (Client, error) {
 
 	return Client{
 		Adjudicator: adjudicator,
-		Eth:         ethClient,
+		Eth:         *ethClient,
 		ChainID:     chainID,
 	}, nil
 }

@@ -15,7 +15,7 @@ type Station struct {
 }
 
 // Calculate calculates gas price.
-func Calculate(ethClient *ethclient.Client) (*big.Int, error) {
+func Calculate(ethClient ethclient.Client) (*big.Int, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
