@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"app/pkg/eth/gasprice"
 	"errors"
 	"math/big"
 
@@ -58,7 +59,7 @@ func (channel *Channel) ApproveInitChannel(privateKey []byte) (state.Signature, 
 
 // FundChannel deposits funds to already opened state channel.
 // It returns on-chain transaction with detailed information.
-func (channel *Channel) FundChannel(p Participant, privateKey []byte, opts ...GasStation) (*types.Transaction, error) {
+func (channel *Channel) FundChannel(p Participant, privateKey []byte, opts ...gasprice.Station) (*types.Transaction, error) {
 	if !channel.c.PreFundComplete() {
 		return &types.Transaction{}, ErrIncompleteState
 	}
@@ -145,7 +146,7 @@ func (channel *Channel) SignState(stateProposal *StateProposal, privateKey []byt
 
 // Conclude transfer all participants funds to the destination addresses and close state channel.
 // It returns on-chain transaction with detailed information.
-func (channel *Channel) Conclude(p Participant, privateKey []byte, participantSignatures map[common.Address]state.Signature, opts ...GasStation) (*types.Transaction, error) {
+func (channel *Channel) Conclude(p Participant, privateKey []byte, participantSignatures map[common.Address]state.Signature, opts ...gasprice.Station) (*types.Transaction, error) {
 	lastState := channel.lastState
 	if !lastState.IsFinal {
 		return &types.Transaction{}, ErrNotFinalState
@@ -211,26 +212,6 @@ func (channel *Channel) CheckSignature(signature state.Signature, s state.State)
 // CurrentState returns information about current state.
 func (channel *Channel) CurrentState() state.State {
 	return *channel.lastState
-}
-
-// GetLiability returns Liability struct from defined state.
-func (channel *Channel) GetLiability(s state.State) (*LiabilityState, error) {
-	liabilitiesState, err := DecodeLiabilityFromBytes(s.AppData)
-	if err != nil {
-		return &LiabilityState{}, err
-	}
-
-	return liabilitiesState, nil
-}
-
-// CurrentLiability returns Liability struct from current state.
-func (channel *Channel) CurrentLiability() (*LiabilityState, error) {
-	liabilitiesState, err := DecodeLiabilityFromBytes(channel.lastState.AppData)
-	if err != nil {
-		return &LiabilityState{}, err
-	}
-
-	return liabilitiesState, nil
 }
 
 // CheckHoldings returns current holdings for already opened state channel per asset.
