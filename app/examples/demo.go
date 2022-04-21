@@ -284,7 +284,7 @@ func proposeLiability(ch *protocol.Channel) ([]byte, bool, error) {
 
 		switch req {
 		case "REQ":
-			err = sp.RequestLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
+			sp.RequestLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
 		case "ACK":
 			err = sp.AcknowledgeLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
 		case "REVERT":
