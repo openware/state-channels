@@ -53,15 +53,8 @@ func SimpleTrade(participants []protocol.Participant, privKeys map[protocol.Part
 		return err
 	}
 
-	err = st.RequestLiability(participants[0].Index, participants[1].Index, "ETH", decimal.NewFromFloat(12))
-	if err != nil {
-		return err
-	}
-
-	err = st.RequestLiability(participants[1].Index, participants[0].Index, "BTC", decimal.NewFromFloat(0.2))
-	if err != nil {
-		return err
-	}
+	st.RequestLiability(participants[0].Index, participants[1].Index, "ETH", decimal.NewFromFloat(12))
+	st.RequestLiability(participants[1].Index, participants[0].Index, "BTC", decimal.NewFromFloat(0.2))
 
 	err = st.ApproveLiabilities()
 	if err != nil {

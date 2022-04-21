@@ -11,22 +11,22 @@ import (
 
 // StateProposal represents information about proposed state.
 type StateProposal struct {
-	state          *st.State
-	liabilityState liability.LiabilityState
+	state            *st.State
+	liabilitiesState liability.LiabilitiesState
 }
 
 // NewStateProposal creates state proposal from state.
 func NewStateProposal(state *st.State) (*StateProposal, error) {
-	liabilityState, err := liability.DecodeFromBytes(state.AppData)
+	liabilitiesState, err := liability.DecodeFromBytes(state.AppData)
 	if errors.Is(err, liability.ErrEmptyByteArray) {
-		liabilityState = liability.NewLiabilityState()
+		liabilitiesState = make(liability.LiabilitiesState)
 	} else if err != nil {
 		return &StateProposal{}, err
 	}
 
 	return &StateProposal{
-		state:          state,
-		liabilityState: *liabilityState,
+		state:            state,
+		liabilitiesState: liabilitiesState,
 	}, nil
 }
 
@@ -56,28 +56,28 @@ func (sp *StateProposal) SetAppData(appData []byte) {
 }
 
 // LiabilityState returns proposed state liability.
-func (sp *StateProposal) LiabilityState() liability.LiabilityState {
-	return sp.liabilityState
+func (sp *StateProposal) LiabilityState() liability.LiabilitiesState {
+	return sp.liabilitiesState
 }
 
 // RequestLiability add request liability to state proposal.
-func (sp *StateProposal) RequestLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
-	return sp.liabilityState.AddRequestLiability(from, to, asset, amount)
+func (sp *StateProposal) RequestLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) {
+	sp.liabilitiesState.AddRequestLiability(from, to, asset, amount)
 }
 
 // AcknowledgeLiability add acknowledge liability to state proposal.
 func (sp *StateProposal) AcknowledgeLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
-	return sp.liabilityState.AddAcknowledgeLiability(from, to, asset, amount)
+	return sp.liabilitiesState.AddAcknowledgeLiability(from, to, asset, amount)
 }
 
 // RevertLiability add revert liability to state proposal.
 func (sp *StateProposal) RevertLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
-	return sp.liabilityState.AddRevertLiability(from, to, asset, amount)
+	return sp.liabilitiesState.AddRevertLiability(from, to, asset, amount)
 }
 
 // ApproveLiabilities approves all requested liabilities.
 func (sp *StateProposal) ApproveLiabilities() error {
-	appDataBytes, err := sp.liabilityState.EncodeToBytes()
+	appDataBytes, err := sp.liabilitiesState.EncodeToBytes()
 	if err != nil {
 		return err
 	}
