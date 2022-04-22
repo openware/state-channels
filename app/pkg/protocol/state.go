@@ -10,7 +10,7 @@ import (
 
 // buildState constructs state from input params.
 func buildState(
-	contract Contract, participants []Participant,
+	contract *Contract, participants []*Participant,
 	channelNonce *big.Int, appData []byte, turnNum uint64, isFinal bool) st.State {
 	addrs := addresses(participants)
 	assetExit := singleAssetExit(contract.AssetAddress, participants)
@@ -29,7 +29,7 @@ func buildState(
 }
 
 // singleAssetExit returns singleAssetExit struct formed from allocations
-func singleAssetExit(assetAddress common.Address, participants []Participant) outcome.SingleAssetExit {
+func singleAssetExit(assetAddress common.Address, participants []*Participant) outcome.SingleAssetExit {
 	var allocations []outcome.Allocation
 
 	for _, p := range participants {
@@ -46,7 +46,7 @@ func singleAssetExit(assetAddress common.Address, participants []Participant) ou
 }
 
 // addresses returns participant's addresses
-func addresses(participants []Participant) []common.Address {
+func addresses(participants []*Participant) []common.Address {
 	var addresses []common.Address
 
 	for _, p := range participants {

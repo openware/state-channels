@@ -16,7 +16,7 @@ import (
 	"github.com/statechannels/go-nitro/crypto"
 )
 
-func Demo(participants []protocol.Participant, privKeys map[protocol.Participant][]byte, contract *protocol.Contract) error {
+func Demo(participants []*protocol.Participant, privKeys map[*protocol.Participant][]byte, contract *protocol.Contract) error {
 	estimatedGasPrice, err := gasprice.Calculate(contract.Client.Eth)
 	if err != nil {
 		return err
@@ -53,8 +53,8 @@ func Demo(participants []protocol.Participant, privKeys map[protocol.Participant
 }
 
 func initChannel(
-	participants []protocol.Participant,
-	privKeys map[protocol.Participant][]byte,
+	participants []*protocol.Participant,
+	privKeys map[*protocol.Participant][]byte,
 	contract *protocol.Contract) (*protocol.Channel, error) {
 
 	prop, err := initialProposal(participants, contract)
@@ -90,10 +90,10 @@ func initChannel(
 }
 
 func initialProposal(
-	participants []protocol.Participant,
+	participants []*protocol.Participant,
 	contract *protocol.Contract) (*protocol.InitProposal, error) {
 
-	prop := protocol.NewInitProposal(participants[0], *contract)
+	prop := protocol.NewInitProposal(participants[0], contract)
 	for _, p := range participants[1:] {
 		prop.AddParticipant(p)
 	}
@@ -127,8 +127,8 @@ func initialProposal(
 
 func fundChannel(
 	ch *protocol.Channel,
-	participants []protocol.Participant,
-	privKeys map[protocol.Participant][]byte,
+	participants []*protocol.Participant,
+	privKeys map[*protocol.Participant][]byte,
 	gasStation gasprice.Station) error {
 
 	err := confirmPrompt("Fund channel")
@@ -152,7 +152,7 @@ func fundChannel(
 
 func confirmChannelFund(
 	ch *protocol.Channel,
-	privKeys map[protocol.Participant][]byte) error {
+	privKeys map[*protocol.Participant][]byte) error {
 
 	err := confirmPrompt("Sign PostFund state")
 	if err != nil {
@@ -179,8 +179,8 @@ func confirmChannelFund(
 
 func proposeState(
 	ch *protocol.Channel,
-	participants []protocol.Participant,
-	privKeys map[protocol.Participant][]byte,
+	participants []*protocol.Participant,
+	privKeys map[*protocol.Participant][]byte,
 ) error {
 
 	for {
@@ -310,8 +310,8 @@ func proposeLiability(ch *protocol.Channel) ([]byte, bool, error) {
 
 func concludeChannel(
 	ch *protocol.Channel,
-	participants []protocol.Participant,
-	privKeys map[protocol.Participant][]byte,
+	participants []*protocol.Participant,
+	privKeys map[*protocol.Participant][]byte,
 	gasStation gasprice.Station) error {
 
 	err := confirmPrompt("Finalize channel")

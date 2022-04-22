@@ -10,28 +10,29 @@ import (
 
 // InitProposal represents information about initial state, contract, participants.
 type InitProposal struct {
-	Participants []Participant
+	Participants []*Participant
 	State        *st.State
-	Contract     Contract
+	Contract     *Contract
 	ChannelNonce *big.Int
 }
 
 // NewInitProposal returns InitProposal object from income params.
-func NewInitProposal(p Participant, contract Contract) *InitProposal {
+func NewInitProposal(p *Participant, contract *Contract) *InitProposal {
 	channelNonce := big.NewInt(time.Now().UnixMilli())
+	participants := []*Participant{p}
 	// Build initial state, called PreFund state in go-nitro
-	state := buildState(contract, []Participant{p}, channelNonce, []byte{}, 0, false)
+	state := buildState(contract, participants, channelNonce, []byte{}, 0, false)
 
 	return &InitProposal{
 		Contract:     contract,
 		ChannelNonce: channelNonce,
 		State:        &state,
-		Participants: []Participant{p},
+		Participants: participants,
 	}
 }
 
 // AddParticipant adds participant into proposed state and participant array.
-func (ip *InitProposal) AddParticipant(p Participant) {
+func (ip *InitProposal) AddParticipant(p *Participant) {
 	ip.Participants = append(ip.Participants, p)
 
 	ip.State.Participants = append(ip.State.Participants, p.Address)

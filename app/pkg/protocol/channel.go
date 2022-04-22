@@ -60,7 +60,7 @@ func (channel *Channel) ApproveInitChannel(privateKey []byte) (state.Signature, 
 
 // FundChannel deposits funds to already opened state channel.
 // It returns on-chain transaction with detailed information.
-func (channel *Channel) FundChannel(p Participant, privateKey []byte, opts ...gasprice.Station) (*types.Transaction, error) {
+func (channel *Channel) FundChannel(p *Participant, privateKey []byte, opts ...gasprice.Station) (*types.Transaction, error) {
 	if !channel.c.PreFundComplete() {
 		return &types.Transaction{}, ErrIncompleteState
 	}
@@ -147,7 +147,7 @@ func (channel *Channel) SignState(stateProposal *StateProposal, privateKey []byt
 
 // Conclude transfer all participants funds to the destination addresses and close state channel.
 // It returns on-chain transaction with detailed information.
-func (channel *Channel) Conclude(p Participant, privateKey []byte, participantSignatures map[common.Address]state.Signature, opts ...gasprice.Station) (*types.Transaction, error) {
+func (channel *Channel) Conclude(p *Participant, privateKey []byte, participantSignatures map[common.Address]state.Signature, opts ...gasprice.Station) (*types.Transaction, error) {
 	lastState := channel.lastState
 	if !lastState.IsFinal {
 		return &types.Transaction{}, ErrNotFinalState
