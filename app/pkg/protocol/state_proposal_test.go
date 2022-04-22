@@ -15,7 +15,7 @@ import (
 func getStateProposal() (StateProposal, error) {
 	participant := NewParticipant(common.HexToAddress("0x01"), types.Destination(common.HexToHash("0x01")), uint(1), big.NewInt(2))
 	contract := NewContract(nitro.Client{}, common.HexToAddress("0x"))
-	proposal := NewInitProposal(*participant, *contract)
+	proposal := NewInitProposal(participant, contract)
 	state := proposal.State
 
 	newStateProposal, err := NewStateProposal(state)

@@ -48,8 +48,8 @@ func main() {
 	}
 
 	// Initialize Participants
-	var participants []protocol.Participant
-	participantPrivateKeys := make(map[protocol.Participant][]byte)
+	var participants []*protocol.Participant
+	participantPrivateKeys := make(map[*protocol.Participant][]byte)
 
 	for i := 0; i < ParticipantCount; i++ {
 		vault := vaultAccount.Accounts[i]
@@ -57,8 +57,8 @@ func main() {
 		amount := big.NewInt(0).Mul(big.NewInt(1+int64(i)), big.NewInt(100))
 
 		participantObj := protocol.NewParticipant(common.HexToAddress(vault.Address), types.Destination(common.HexToHash(vault.Address)), uint(i), amount)
-		participants = append(participants, *participantObj)
-		participantPrivateKeys[*participantObj] = common.Hex2Bytes(privateKey)
+		participants = append(participants, participantObj)
+		participantPrivateKeys[participantObj] = common.Hex2Bytes(privateKey)
 	}
 
 	// Initialize SC client

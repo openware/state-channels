@@ -9,8 +9,8 @@ import (
 	"github.com/statechannels/go-nitro/crypto"
 )
 
-func SimpleTrade(participants []protocol.Participant, privKeys map[protocol.Participant][]byte, contract *protocol.Contract) error {
-	prop := protocol.NewInitProposal(participants[0], *contract)
+func SimpleTrade(participants []*protocol.Participant, privKeys map[*protocol.Participant][]byte, contract *protocol.Contract) error {
+	prop := protocol.NewInitProposal(participants[0], contract)
 	for _, p := range participants[1:] {
 		prop.AddParticipant(p)
 	}
