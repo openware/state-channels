@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+import "state.proto";
+
+option go_package = "github.com/openware/state-channels/app/internal/proto";
+
+service InitProposalService {
+  // Public
+  rpc CreateProposal(CreateProposalRequest) returns (CreateProposalResponse);
+  // Public
+  rpc AddParticipant(AddParticipantRequest) returns (EmptyInitProposalResponse);
+}
+
+message Participant {
+  string address = 1;
+  string destination = 2;
+  int64 locked_amount = 3;
+  uint64 index = 4;
+}
+
+message Contract {
+  bytes nitro_client = 1;
+  string asset_address = 2;
+}
+
+message InitialProposal {
+  repeated Participant participants = 1;
+  State state = 2;
+  Contract contract = 3;
+  int64 channel_nonce = 4;
+}
+
+message CreateProposalRequest {
+  Participant participant = 1;
+  Contract contract = 2;
+}
+
+message CreateProposalResponse {
+  InitialProposal initial_proposal = 1;
+}
+
+message EmptyInitProposalResponse {
+}
+
+message AddParticipantRequest {
+  Participant participant = 1;
+}

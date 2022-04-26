@@ -1,6 +1,8 @@
 package nitro
 
 import (
+	"bytes"
+	"encoding/gob"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -56,4 +58,30 @@ func NewClient(contractAddr, rpcUrl string) (Client, error) {
 		Eth:         *ethClient,
 		ChainID:     chainID,
 	}, nil
+}
+
+// EncodeToBytes tranform Client struct to bytes.
+func (client Client) EncodeToBytes() ([]byte, error) {
+	buf := bytes.Buffer{}
+	enc := gob.NewEncoder(&buf)
+
+	err := enc.Encode(client)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+// DecodeFromBytes tranform bytes to Client struct.
+func DecodeFromBytes(data []byte) (Client, error) {
+	buf := bytes.NewBuffer(data)
+	dec := gob.NewDecoder(buf)
+	var client Client
+
+	if err := dec.Decode(&client); err != nil {
+		return Client{}, err
+	}
+
+	return client, nil
 }

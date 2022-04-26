@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+import "init_proposal.proto";
+import "state.proto";
+import "state_proposal.proto";
+
+option go_package = "github.com/openware/state-channels/app/internal/proto";
+
+// channel?
+service ChannelService {
+  // Public
+  rpc Init(InitChannelRequest) returns (InitChannelResponse);
+  // Public
+  rpc ApproveInit(ApproveRequest) returns (ApproveResponse);
+  // Public
+  rpc Fund(FundChannelRequest) returns (FundChannelResponse);
+  // Public
+  rpc ApproveFunding(ApproveRequest) returns (ApproveResponse);
+  // Public
+  rpc ProposeState(EmptyRequest) returns (ProposeResponse);
+  // Public
+  rpc SignState(SignStateRequest) returns (SignStateResponse);
+  // Public
+  rpc Conclude(ConcludeRequest) returns (ConcludeResponse);
+  // Public
+  rpc CheckSignature(CheckSignatureRequest) returns (BoolResponse);
+  // Public
+  rpc CurrentState(EmptyRequest) returns (CurrentStateResponse);
+  // Public
+  rpc CheckHoldings(EmptyRequest) returns (CheckHoldingsResponse);
+  // Public
+  rpc StateIsFinal(EmptyRequest) returns (BoolResponse);
+}
+
+message InitChannelRequest {
+  InitialProposal initial_proposal = 1;
+  uint32 participant_index = 2;
+}
+
+message Channel {
+  InitialProposal initial_proposal = 1;
+  State state = 2;
+  bytes ch = 3; // channel obj
+}
+
+message InitChannelResponse {
+  Channel channel = 1;
+}
+
+message ApproveRequest {
+  bytes private_key = 1;
+}
+
+message Signature {
+  bytes r = 1;
+  bytes s = 2;
+  bytes v = 3;
+}
+
+message ApproveResponse {
+  Signature signature = 1;
+}
+
+message EmptyRequest {
+}
+
+message GasStation {
+  int64 gas_price = 1;
+  uint64 gas_limit = 2;
+}
+
+message FundChannelRequest {
+  Participant participant = 1;
+  bytes private_key = 2;
+  optional GasStation gas_station = 3;
+}
+
+message FundChannelResponse {
+  bytes transaction = 1;
+}
+
+message ProposeResponse {
+  StateProposal state_proposal = 1;
+}
+
+message SignStateRequest {
+  StateProposal state_proposal = 1;
+  bytes private_key = 2;
+}
+
+message SignStateResponse {
+  Signature signature = 1;
+}
+
+message ConcludeRequest {
+  Participant participant = 1;
+  bytes private_key = 2;
+  map<string, Signature> signatures = 3;
+  optional GasStation gas_station = 4;
+}
+
+message ConcludeResponse {
+  bytes transaction = 1;
+}
+
+message CurrentStateResponse {
+  State state = 1;
+}
+
+message CheckHoldingsResponse {
+  int64 amount = 1;
+}
+
+message BoolResponse {
+  bool ok = 1;
+}
+
+message CheckSignatureRequest {
+  Signature signature = 1;
+  State state = 2;
+}

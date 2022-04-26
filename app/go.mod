@@ -8,13 +8,19 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/statechannels/go-nitro v0.0.0-20220204132611-5c628b3d2c8e
 	github.com/stretchr/testify v1.7.0
+	google.golang.org/grpc v1.41.0
+	google.golang.org/protobuf v1.27.1
 
 )
 
 require (
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
+	github.com/golang/protobuf v1.5.0 // indirect
 	github.com/mattn/go-colorable v0.1.9 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
+	golang.org/x/text v0.3.6 // indirect
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 )
 
 require (
