@@ -73,7 +73,7 @@ func TestAddLiability(t *testing.T) {
 		liab, err := liability.DecodeFromBytes(stateProposal.AppData())
 		assert.NoError(t, err)
 
-		assert.Equal(t, map[liability.Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liab[0][1].REQ)
-		assert.Equal(t, map[liability.Asset]decimal.Decimal{"LTC": decimal.NewFromFloat(2)}, liab[0][1].ACK)
+		assert.Equal(t, map[liability.Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liab[0][1].Pending)
+		assert.Equal(t, map[liability.Asset]decimal.Decimal{"LTC": decimal.NewFromFloat(2)}, liab[0][1].Executed)
 	})
 }

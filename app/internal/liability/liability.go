@@ -12,7 +12,7 @@ import (
 var (
 	ErrEmptyByteArray         = errors.New("liability: empty byte array")
 	ErrNonExistingLiabilities = errors.New("liability: liabilities for such participant don't exist")
-	ErrNoReqLiability         = errors.New("liability: liability with REQ type doesn't exist")
+	ErrNoPendingLiability     = errors.New("liability: liability with pending type doesn't exist")
 	ErrInvalidOperation       = errors.New("liability: given amount is bigger than actual amount")
 )
 
@@ -20,8 +20,8 @@ type Asset string
 
 // Liabilities represents information about asset and amount of that asset
 type Liabilities struct {
-	REQ map[Asset]decimal.Decimal
-	ACK map[Asset]decimal.Decimal
+	Pending  map[Asset]decimal.Decimal
+	Executed map[Asset]decimal.Decimal
 }
 
 // LiabilitiesMap represents information about participant index and appropriate Liability
@@ -30,24 +30,24 @@ type LiabilitiesMap map[uint]*Liabilities
 // LiabilitiesState represents information about participant index and appropriate LiabilitiesMap
 // Example:
 // FROM: {
-// 	TO: { REQ: { ETH: 1, BTC: 0.1 }, ACK: { ETH: 7 } }
+// 	TO: { Pending: { ETH: 1, BTC: 0.1 }, Executed: { ETH: 7 } }
 // }
 type LiabilitiesState map[uint]LiabilitiesMap
 
 // NewLiabilities creates new Liabilities instance.
 func NewLiabilities() *Liabilities {
-	req := make(map[Asset]decimal.Decimal)
-	ack := make(map[Asset]decimal.Decimal)
+	pending := make(map[Asset]decimal.Decimal)
+	executed := make(map[Asset]decimal.Decimal)
 
 	return &Liabilities{
-		REQ: req,
-		ACK: ack,
+		Pending:  pending,
+		Executed: executed,
 	}
 }
 
 // AddRequestLiability requests liability.
 func (l *Liabilities) AddRequestLiability(asset Asset, amount decimal.Decimal) {
-	l.REQ[asset] = l.REQ[asset].Add(amount)
+	l.Pending[asset] = l.Pending[asset].Add(amount)
 }
 
 // AddAcknowledgeLiability acknowledges liability.
@@ -57,11 +57,11 @@ func (l *Liabilities) AddAcknowledgeLiability(asset Asset, amount decimal.Decima
 		return err
 	}
 
-	l.ACK[asset] = amount
-	if l.REQ[asset].Equal(amount) {
-		delete(l.REQ, asset)
+	l.Executed[asset] = amount
+	if l.Pending[asset].Equal(amount) {
+		delete(l.Pending, asset)
 	} else {
-		l.REQ[asset] = l.REQ[asset].Sub(amount)
+		l.Pending[asset] = l.Pending[asset].Sub(amount)
 	}
 
 	return nil
@@ -74,9 +74,9 @@ func (l *Liabilities) AddRevertLiability(asset Asset, amount decimal.Decimal) er
 		return err
 	}
 
-	l.REQ[asset] = l.REQ[asset].Sub(amount)
-	if l.REQ[asset].Equal(decimal.Zero) {
-		delete(l.REQ, asset)
+	l.Pending[asset] = l.Pending[asset].Sub(amount)
+	if l.Pending[asset].Equal(decimal.Zero) {
+		delete(l.Pending, asset)
 	}
 
 	return nil
@@ -84,11 +84,11 @@ func (l *Liabilities) AddRevertLiability(asset Asset, amount decimal.Decimal) er
 
 // validate validates given params for further operations.
 func (l *Liabilities) validate(asset Asset, amount decimal.Decimal) error {
-	if _, ok := l.REQ[asset]; !ok {
-		return ErrNoReqLiability
+	if _, ok := l.Pending[asset]; !ok {
+		return ErrNoPendingLiability
 	}
 
-	if amount.Cmp(l.REQ[asset]) == 1 {
+	if amount.Cmp(l.Pending[asset]) == 1 {
 		return ErrInvalidOperation
 	}
 

@@ -18,19 +18,19 @@ func TestLiabilities(t *testing.T) {
 		assert.NotEmpty(t, liabilities)
 
 		liabilities.AddRequestLiability("ETH", decimal.NewFromFloat(1))
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.Executed)
 
 		liabilities.AddRequestLiability("ETH", decimal.NewFromFloat(2))
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(3)}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(3)}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.Executed)
 
 		liabilities.AddRequestLiability("BTC", decimal.NewFromFloat(12))
 		assert.Equal(t, map[Asset]decimal.Decimal{
 			"ETH": decimal.NewFromFloat(3),
 			"BTC": decimal.NewFromFloat(12),
-		}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.ACK)
+		}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.Executed)
 	})
 
 	t.Run("acknowledge liability", func(t *testing.T) {
@@ -39,22 +39,22 @@ func TestLiabilities(t *testing.T) {
 
 		// Acknowledge, no req asset existing
 		err := liabilities.AddAcknowledgeLiability("ETH", decimal.NewFromFloat(1))
-		assert.Error(t, err, ErrNoReqLiability)
+		assert.Error(t, err, ErrNoPendingLiability)
 
 		// Acknowledge, same amount
 		liabilities.AddRequestLiability("ETH", decimal.NewFromFloat(2))
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.Executed)
 
 		err = liabilities.AddAcknowledgeLiability("ETH", decimal.NewFromFloat(2))
 		assert.NoError(t, err)
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liabilities.ACK)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.REQ)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liabilities.Executed)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.Pending)
 
 		// Acknowledge, bigger amount
 		liabilities.AddRequestLiability("BTC", decimal.NewFromFloat(22))
-		assert.Equal(t, map[Asset]decimal.Decimal{"BTC": decimal.NewFromFloat(22)}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liabilities.ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"BTC": decimal.NewFromFloat(22)}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, liabilities.Executed)
 
 		err = liabilities.AddAcknowledgeLiability("BTC", decimal.NewFromFloat(23))
 		assert.Error(t, err, ErrInvalidOperation)
@@ -65,12 +65,12 @@ func TestLiabilities(t *testing.T) {
 		assert.NotEmpty(t, liabilities)
 
 		liabilities.AddRequestLiability("ETH", decimal.NewFromFloat(1))
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.Executed)
 
 		// Revert non existing liability
 		err := liabilities.AddRevertLiability("BTC", decimal.NewFromFloat(1))
-		assert.Error(t, err, ErrNoReqLiability)
+		assert.Error(t, err, ErrNoPendingLiability)
 
 		// Revert liability with bigger amount that actual one
 		err = liabilities.AddRevertLiability("ETH", decimal.NewFromFloat(3))
@@ -84,13 +84,13 @@ func TestLiabilities(t *testing.T) {
 
 		// Successfull revert of liability
 		liabilities.AddRequestLiability("BTC", decimal.NewFromFloat(1))
-		assert.Equal(t, map[Asset]decimal.Decimal{"BTC": decimal.NewFromFloat(1)}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"BTC": decimal.NewFromFloat(1)}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.Executed)
 
 		err = liabilities.AddRevertLiability("BTC", decimal.NewFromFloat(1))
 		assert.NoError(t, err)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, liabilities.Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(1)}, liabilities.Executed)
 	})
 }
 
@@ -99,19 +99,19 @@ func TestLiabilitiesState(t *testing.T) {
 		state := make(LiabilitiesState)
 
 		state.AddRequestLiability(0, 1, "ETH", decimal.NewFromFloat(2))
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, state[0][1].REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, state[0][1].Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].Executed)
 
 		state.AddRequestLiability(0, 1, "ETH", decimal.NewFromFloat(3))
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(5)}, state[0][1].REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].ACK)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(5)}, state[0][1].Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].Executed)
 
 		state.AddRequestLiability(0, 1, "BTC", decimal.NewFromFloat(0.3))
 		assert.Equal(t, map[Asset]decimal.Decimal{
 			"ETH": decimal.NewFromFloat(5),
 			"BTC": decimal.NewFromFloat(0.3)},
-			state[0][1].REQ)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].ACK)
+			state[0][1].Pending)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].Executed)
 	})
 
 	t.Run("adds acknowledge liability", func(t *testing.T) {
@@ -129,8 +129,8 @@ func TestLiabilitiesState(t *testing.T) {
 
 		err = state.AddAcknowledgeLiability(0, 1, "ETH", decimal.NewFromFloat(2))
 		assert.NoError(t, err)
-		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, state[0][1].ACK)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].REQ)
+		assert.Equal(t, map[Asset]decimal.Decimal{"ETH": decimal.NewFromFloat(2)}, state[0][1].Executed)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].Pending)
 	})
 
 	t.Run("adds revert liability", func(t *testing.T) {
@@ -148,8 +148,8 @@ func TestLiabilitiesState(t *testing.T) {
 
 		err = state.AddRevertLiability(0, 1, "ETH", decimal.NewFromFloat(2))
 		assert.NoError(t, err)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].ACK)
-		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].REQ)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].Executed)
+		assert.Equal(t, map[Asset]decimal.Decimal{}, state[0][1].Pending)
 	})
 
 	t.Run("encode to bytes", func(t *testing.T) {
