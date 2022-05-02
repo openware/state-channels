@@ -48,7 +48,7 @@ func TestAddLiability(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.AppData())
 
-		stateProposal.RequestLiability(0, 1, "ETH", decimal.NewFromFloat(2))
+		stateProposal.PendingLiability(0, 1, "ETH", decimal.NewFromFloat(2))
 		stateProposal.ApproveLiabilities()
 		assert.NotEmpty(t, stateProposal.AppData())
 	})
@@ -58,11 +58,11 @@ func TestAddLiability(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, types.Bytes(types.Bytes{}), stateProposal.AppData())
 
-		stateProposal.RequestLiability(0, 1, "ETH", decimal.NewFromFloat(2))
-		stateProposal.RequestLiability(0, 1, "GOLD", decimal.NewFromFloat(1))
-		stateProposal.RequestLiability(0, 1, "LTC", decimal.NewFromFloat(2))
+		stateProposal.PendingLiability(0, 1, "ETH", decimal.NewFromFloat(2))
+		stateProposal.PendingLiability(0, 1, "GOLD", decimal.NewFromFloat(1))
+		stateProposal.PendingLiability(0, 1, "LTC", decimal.NewFromFloat(2))
 
-		err = stateProposal.AcknowledgeLiability(0, 1, "LTC", decimal.NewFromFloat(2))
+		err = stateProposal.ExecutedLiability(0, 1, "LTC", decimal.NewFromFloat(2))
 		assert.NoError(t, err)
 		err = stateProposal.RevertLiability(0, 1, "GOLD", decimal.NewFromFloat(1))
 		assert.NoError(t, err)

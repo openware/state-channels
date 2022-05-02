@@ -6,6 +6,7 @@ import (
 	"app/pkg/protocol"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -252,7 +253,7 @@ func proposeLiability(ch *protocol.Channel) ([]byte, bool, error) {
 			break
 		}
 
-		req, err := inputPrompt("Type (REQ/ACK/REVERT)")
+		req, err := inputPrompt("Type (PENDING/EXEC/REVERT)")
 		if err != nil {
 			break
 		}
@@ -282,12 +283,12 @@ func proposeLiability(ch *protocol.Channel) ([]byte, bool, error) {
 			break
 		}
 
-		switch req {
-		case "REQ":
-			sp.RequestLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
-		case "ACK":
-			err = sp.AcknowledgeLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
-		case "REVERT":
+		switch strings.ToLower(req) {
+		case "pending":
+			sp.PendingLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
+		case "exec":
+			err = sp.ExecutedLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
+		case "revert":
 			err = sp.RevertLiability(uint(fromNumber), uint(toNumber), liability.Asset(asset), amountNumber)
 		default:
 			break

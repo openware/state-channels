@@ -45,13 +45,13 @@ func NewLiabilities() *Liabilities {
 	}
 }
 
-// AddRequestLiability requests liability.
-func (l *Liabilities) AddRequestLiability(asset Asset, amount decimal.Decimal) {
+// AddPendingLiability add pending liability.
+func (l *Liabilities) AddPendingLiability(asset Asset, amount decimal.Decimal) {
 	l.Pending[asset] = l.Pending[asset].Add(amount)
 }
 
-// AddAcknowledgeLiability acknowledges liability.
-func (l *Liabilities) AddAcknowledgeLiability(asset Asset, amount decimal.Decimal) error {
+// AddExecutedLiability add executed liability.
+func (l *Liabilities) AddExecutedLiability(asset Asset, amount decimal.Decimal) error {
 	err := l.validate(asset, amount)
 	if err != nil {
 		return err
@@ -95,8 +95,8 @@ func (l *Liabilities) validate(asset Asset, amount decimal.Decimal) error {
 	return nil
 }
 
-// AddRequestLiability adds new request liability to liabilities state.
-func (ls LiabilitiesState) AddRequestLiability(from, to uint, asset Asset, amount decimal.Decimal) {
+// AddPendingLiability adds new pending liability to liabilities state.
+func (ls LiabilitiesState) AddPendingLiability(from, to uint, asset Asset, amount decimal.Decimal) {
 	liabilitiesMap, found := ls[from]
 	if !found {
 		ls[from] = make(LiabilitiesMap)
@@ -107,17 +107,17 @@ func (ls LiabilitiesState) AddRequestLiability(from, to uint, asset Asset, amoun
 		ls[from][to] = NewLiabilities()
 	}
 
-	ls[from][to].AddRequestLiability(asset, amount)
+	ls[from][to].AddPendingLiability(asset, amount)
 }
 
-// AddAcknowledgeLiability adds new acknowledge liability to liabilities state.
-func (ls LiabilitiesState) AddAcknowledgeLiability(from, to uint, asset Asset, amount decimal.Decimal) error {
+// AddExecutedLiability adds new executed liability to liabilities state.
+func (ls LiabilitiesState) AddExecutedLiability(from, to uint, asset Asset, amount decimal.Decimal) error {
 	_, found := ls[from][to]
 	if !found {
 		return ErrNonExistingLiabilities
 	}
 
-	err := ls[from][to].AddAcknowledgeLiability(asset, amount)
+	err := ls[from][to].AddExecutedLiability(asset, amount)
 	if err != nil {
 		return err
 	}

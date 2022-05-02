@@ -60,14 +60,14 @@ func (sp *StateProposal) LiabilityState() liability.LiabilitiesState {
 	return sp.liabilitiesState
 }
 
-// RequestLiability add request liability to state proposal.
-func (sp *StateProposal) RequestLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) {
-	sp.liabilitiesState.AddRequestLiability(from, to, asset, amount)
+// PendingLiability add pending liability to state proposal.
+func (sp *StateProposal) PendingLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) {
+	sp.liabilitiesState.AddPendingLiability(from, to, asset, amount)
 }
 
-// AcknowledgeLiability add acknowledge liability to state proposal.
-func (sp *StateProposal) AcknowledgeLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
-	return sp.liabilitiesState.AddAcknowledgeLiability(from, to, asset, amount)
+// ExecutedLiability add executed liability to state proposal.
+func (sp *StateProposal) ExecutedLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) error {
+	return sp.liabilitiesState.AddExecutedLiability(from, to, asset, amount)
 }
 
 // RevertLiability add revert liability to state proposal.
