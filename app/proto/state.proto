@@ -5,7 +5,7 @@ option go_package = "github.com/openware/state-channels/app/internal/proto";
 message State {
   uint64 chain_id = 1;
   repeated string participants = 2;
-  uint64 channel_nonce = 3;
+  int64 channel_nonce = 3;
   string app_definition = 4;
   uint64 challenge_duration = 5;
   bytes app_data = 6;

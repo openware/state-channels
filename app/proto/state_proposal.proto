@@ -8,15 +8,15 @@ service StateProposalService {
   // Public
   rpc Create(CreateRequest) returns (CreateResponse);
   // Public
-  rpc SetFinal(EmptyProposalRequest) returns (EmptyProposalResponse);
+  rpc SetFinal(StateProposalRequest) returns (EmptyProposalResponse);
   // Public
-  rpc RequestLiability(LiabilityRequest) returns (EmptyProposalResponse);
+  rpc PendingLiability(LiabilityRequest) returns (EmptyProposalResponse);
   // Public
-  rpc AcknowledgeLiability(LiabilityRequest) returns (EmptyProposalResponse);
+  rpc ExecutedLiability(LiabilityRequest) returns (EmptyProposalResponse);
   // Public
   rpc RevertLiability(LiabilityRequest) returns (EmptyProposalResponse);
   // Public
-  rpc ApproveLiabilities(EmptyProposalRequest) returns (EmptyProposalResponse);
+  rpc ApproveLiabilities(StateProposalRequest) returns (EmptyProposalResponse);
 }
 
 message StateProposal {
@@ -37,9 +37,11 @@ message LiabilityRequest {
   uint64 to = 2;
   string asset = 3;
   string amount = 4;
+  StateProposal state_proposal = 5;
 }
 
-message EmptyProposalRequest {
+message StateProposalRequest {
+  StateProposal state_proposal = 1;
 }
 
 message EmptyProposalResponse {

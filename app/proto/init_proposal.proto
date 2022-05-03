@@ -44,4 +44,5 @@ message EmptyInitProposalResponse {
 
 message AddParticipantRequest {
   Participant participant = 1;
+  InitialProposal initial_proposal = 2;
 }

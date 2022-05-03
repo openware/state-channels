@@ -60,6 +60,11 @@ func (sp *StateProposal) LiabilityState() liability.LiabilitiesState {
 	return sp.liabilitiesState
 }
 
+// State returns state proposal state.
+func (sp *StateProposal) State() st.State {
+	return *sp.state
+}
+
 // PendingLiability add pending liability to state proposal.
 func (sp *StateProposal) PendingLiability(from, to uint, asset liability.Asset, amount decimal.Decimal) {
 	sp.liabilitiesState.AddPendingLiability(from, to, asset, amount)

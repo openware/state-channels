@@ -44,10 +44,10 @@
 - [state_proposal.proto](#state_proposal.proto)
     - [CreateRequest](#.CreateRequest)
     - [CreateResponse](#.CreateResponse)
-    - [EmptyProposalRequest](#.EmptyProposalRequest)
     - [EmptyProposalResponse](#.EmptyProposalResponse)
     - [LiabilityRequest](#.LiabilityRequest)
     - [StateProposal](#.StateProposal)
+    - [StateProposalRequest](#.StateProposalRequest)
   
     - [StateProposalService](#.StateProposalService)
   
@@ -416,6 +416,7 @@ channel?
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | participant | [Participant](#Participant) |  |  |
+| initial_proposal | [InitialProposal](#InitialProposal) |  |  |
 
 
 
@@ -552,7 +553,7 @@ channel?
 | ----- | ---- | ----- | ----------- |
 | chain_id | [uint64](#uint64) |  |  |
 | participants | [string](#string) | repeated |  |
-| channel_nonce | [uint64](#uint64) |  |  |
+| channel_nonce | [int64](#int64) |  |  |
 | app_definition | [string](#string) |  |  |
 | challenge_duration | [uint64](#uint64) |  |  |
 | app_data | [bytes](#bytes) |  |  |
@@ -611,16 +612,6 @@ channel?
 
 
 
-<a name=".EmptyProposalRequest"></a>
-
-### EmptyProposalRequest
-
-
-
-
-
-
-
 <a name=".EmptyProposalResponse"></a>
 
 ### EmptyProposalResponse
@@ -643,6 +634,7 @@ channel?
 | to | [uint64](#uint64) |  |  |
 | asset | [string](#string) |  |  |
 | amount | [string](#string) |  |  |
+| state_proposal | [StateProposal](#StateProposal) |  |  |
 
 
 
@@ -664,6 +656,21 @@ channel?
 
 
 
+
+<a name=".StateProposalRequest"></a>
+
+### StateProposalRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| state_proposal | [StateProposal](#StateProposal) |  |  |
+
+
+
+
+
  
 
  
@@ -679,11 +686,11 @@ channel?
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | Create | [.CreateRequest](#CreateRequest) | [.CreateResponse](#CreateResponse) | Public |
-| SetFinal | [.EmptyProposalRequest](#EmptyProposalRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
-| RequestLiability | [.LiabilityRequest](#LiabilityRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
-| AcknowledgeLiability | [.LiabilityRequest](#LiabilityRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
+| SetFinal | [.StateProposalRequest](#StateProposalRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
+| PendingLiability | [.LiabilityRequest](#LiabilityRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
+| ExecutedLiability | [.LiabilityRequest](#LiabilityRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
 | RevertLiability | [.LiabilityRequest](#LiabilityRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
-| ApproveLiabilities | [.EmptyProposalRequest](#EmptyProposalRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
+| ApproveLiabilities | [.StateProposalRequest](#StateProposalRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
 
  
 
