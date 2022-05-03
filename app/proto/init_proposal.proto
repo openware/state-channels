@@ -32,7 +32,9 @@ message InitialProposal {
 
 message CreateProposalRequest {
   Participant participant = 1;
-  Contract contract = 2;
+  string rpc_url = 2;
+  string contract_address = 3;
+  string asset_address = 4;
 }
 
 message CreateProposalResponse {

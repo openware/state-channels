@@ -55,6 +55,14 @@ func (sp *StateProposal) SetAppData(appData []byte) {
 	sp.state.AppData = appData
 }
 
+func (sp *StateProposal) SetState(state *st.State) {
+	sp.state = state
+}
+
+func (sp *StateProposal) SetLiabilitiesState(liability liability.LiabilitiesState) {
+	sp.liabilitiesState = liability
+}
+
 // LiabilityState returns proposed state liability.
 func (sp *StateProposal) LiabilityState() liability.LiabilitiesState {
 	return sp.liabilitiesState

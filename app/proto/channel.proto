@@ -17,7 +17,7 @@ service ChannelService {
   // Public
   rpc ApproveFunding(ApproveRequest) returns (ApproveResponse);
   // Public
-  rpc ProposeState(EmptyRequest) returns (ProposeResponse);
+  rpc ProposeState(ChannelRequest) returns (ProposeResponse);
   // Public
   rpc SignState(SignStateRequest) returns (SignStateResponse);
   // Public
@@ -25,11 +25,11 @@ service ChannelService {
   // Public
   rpc CheckSignature(CheckSignatureRequest) returns (BoolResponse);
   // Public
-  rpc CurrentState(EmptyRequest) returns (CurrentStateResponse);
+  rpc CurrentState(ChannelRequest) returns (CurrentStateResponse);
   // Public
-  rpc CheckHoldings(EmptyRequest) returns (CheckHoldingsResponse);
+  rpc CheckHoldings(ChannelRequest) returns (CheckHoldingsResponse);
   // Public
-  rpc StateIsFinal(EmptyRequest) returns (BoolResponse);
+  rpc StateIsFinal(ChannelRequest) returns (BoolResponse);
 }
 
 message InitChannelRequest {
@@ -49,6 +49,7 @@ message InitChannelResponse {
 
 message ApproveRequest {
   bytes private_key = 1;
+  Channel channel = 2;
 }
 
 message Signature {
@@ -61,7 +62,8 @@ message ApproveResponse {
   Signature signature = 1;
 }
 
-message EmptyRequest {
+message ChannelRequest {
+  Channel channel = 1;
 }
 
 message GasStation {
@@ -73,10 +75,11 @@ message FundChannelRequest {
   Participant participant = 1;
   bytes private_key = 2;
   optional GasStation gas_station = 3;
+  Channel channel = 4;
 }
 
 message FundChannelResponse {
-  bytes transaction = 1;
+  string tx_id = 1;
 }
 
 message ProposeResponse {
@@ -86,6 +89,7 @@ message ProposeResponse {
 message SignStateRequest {
   StateProposal state_proposal = 1;
   bytes private_key = 2;
+  Channel channel = 3;
 }
 
 message SignStateResponse {
@@ -97,10 +101,11 @@ message ConcludeRequest {
   bytes private_key = 2;
   map<string, Signature> signatures = 3;
   optional GasStation gas_station = 4;
+  Channel channel = 5;
 }
 
 message ConcludeResponse {
-  bytes transaction = 1;
+  string tx_id = 1;
 }
 
 message CurrentStateResponse {
@@ -118,4 +123,5 @@ message BoolResponse {
 message CheckSignatureRequest {
   Signature signature = 1;
   State state = 2;
+  Channel channel = 3;
 }

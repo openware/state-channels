@@ -8,13 +8,13 @@
     - [ApproveResponse](#.ApproveResponse)
     - [BoolResponse](#.BoolResponse)
     - [Channel](#.Channel)
+    - [ChannelRequest](#.ChannelRequest)
     - [CheckHoldingsResponse](#.CheckHoldingsResponse)
     - [CheckSignatureRequest](#.CheckSignatureRequest)
     - [ConcludeRequest](#.ConcludeRequest)
     - [ConcludeRequest.SignaturesEntry](#.ConcludeRequest.SignaturesEntry)
     - [ConcludeResponse](#.ConcludeResponse)
     - [CurrentStateResponse](#.CurrentStateResponse)
-    - [EmptyRequest](#.EmptyRequest)
     - [FundChannelRequest](#.FundChannelRequest)
     - [FundChannelResponse](#.FundChannelResponse)
     - [GasStation](#.GasStation)
@@ -42,8 +42,6 @@
     - [State](#.State)
   
 - [state_proposal.proto](#state_proposal.proto)
-    - [CreateRequest](#.CreateRequest)
-    - [CreateResponse](#.CreateResponse)
     - [EmptyProposalResponse](#.EmptyProposalResponse)
     - [LiabilityRequest](#.LiabilityRequest)
     - [StateProposal](#.StateProposal)
@@ -71,6 +69,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | private_key | [bytes](#bytes) |  |  |
+| channel | [Channel](#Channel) |  |  |
 
 
 
@@ -124,6 +123,21 @@
 
 
 
+<a name=".ChannelRequest"></a>
+
+### ChannelRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| channel | [Channel](#Channel) |  |  |
+
+
+
+
+
+
 <a name=".CheckHoldingsResponse"></a>
 
 ### CheckHoldingsResponse
@@ -149,6 +163,7 @@
 | ----- | ---- | ----- | ----------- |
 | signature | [Signature](#Signature) |  |  |
 | state | [State](#State) |  |  |
+| channel | [Channel](#Channel) |  |  |
 
 
 
@@ -167,6 +182,7 @@
 | private_key | [bytes](#bytes) |  |  |
 | signatures | [ConcludeRequest.SignaturesEntry](#ConcludeRequest.SignaturesEntry) | repeated |  |
 | gas_station | [GasStation](#GasStation) | optional |  |
+| channel | [Channel](#Channel) |  |  |
 
 
 
@@ -197,7 +213,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction | [bytes](#bytes) |  |  |
+| tx_id | [string](#string) |  |  |
 
 
 
@@ -219,16 +235,6 @@
 
 
 
-<a name=".EmptyRequest"></a>
-
-### EmptyRequest
-
-
-
-
-
-
-
 <a name=".FundChannelRequest"></a>
 
 ### FundChannelRequest
@@ -240,6 +246,7 @@
 | participant | [Participant](#Participant) |  |  |
 | private_key | [bytes](#bytes) |  |  |
 | gas_station | [GasStation](#GasStation) | optional |  |
+| channel | [Channel](#Channel) |  |  |
 
 
 
@@ -254,7 +261,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction | [bytes](#bytes) |  |  |
+| tx_id | [string](#string) |  |  |
 
 
 
@@ -333,6 +340,7 @@
 | ----- | ---- | ----- | ----------- |
 | state_proposal | [StateProposal](#StateProposal) |  |  |
 | private_key | [bytes](#bytes) |  |  |
+| channel | [Channel](#Channel) |  |  |
 
 
 
@@ -388,13 +396,13 @@ channel?
 | ApproveInit | [.ApproveRequest](#ApproveRequest) | [.ApproveResponse](#ApproveResponse) | Public |
 | Fund | [.FundChannelRequest](#FundChannelRequest) | [.FundChannelResponse](#FundChannelResponse) | Public |
 | ApproveFunding | [.ApproveRequest](#ApproveRequest) | [.ApproveResponse](#ApproveResponse) | Public |
-| ProposeState | [.EmptyRequest](#EmptyRequest) | [.ProposeResponse](#ProposeResponse) | Public |
+| ProposeState | [.ChannelRequest](#ChannelRequest) | [.ProposeResponse](#ProposeResponse) | Public |
 | SignState | [.SignStateRequest](#SignStateRequest) | [.SignStateResponse](#SignStateResponse) | Public |
 | Conclude | [.ConcludeRequest](#ConcludeRequest) | [.ConcludeResponse](#ConcludeResponse) | Public |
 | CheckSignature | [.CheckSignatureRequest](#CheckSignatureRequest) | [.BoolResponse](#BoolResponse) | Public |
-| CurrentState | [.EmptyRequest](#EmptyRequest) | [.CurrentStateResponse](#CurrentStateResponse) | Public |
-| CheckHoldings | [.EmptyRequest](#EmptyRequest) | [.CheckHoldingsResponse](#CheckHoldingsResponse) | Public |
-| StateIsFinal | [.EmptyRequest](#EmptyRequest) | [.BoolResponse](#BoolResponse) | Public |
+| CurrentState | [.ChannelRequest](#ChannelRequest) | [.CurrentStateResponse](#CurrentStateResponse) | Public |
+| CheckHoldings | [.ChannelRequest](#ChannelRequest) | [.CheckHoldingsResponse](#CheckHoldingsResponse) | Public |
+| StateIsFinal | [.ChannelRequest](#ChannelRequest) | [.BoolResponse](#BoolResponse) | Public |
 
  
 
@@ -448,7 +456,9 @@ channel?
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | participant | [Participant](#Participant) |  |  |
-| contract | [Contract](#Contract) |  |  |
+| rpc_url | [string](#string) |  |  |
+| contract_address | [string](#string) |  |  |
+| asset_address | [string](#string) |  |  |
 
 
 
@@ -582,36 +592,6 @@ channel?
 
 
 
-<a name=".CreateRequest"></a>
-
-### CreateRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| state | [State](#State) |  |  |
-
-
-
-
-
-
-<a name=".CreateResponse"></a>
-
-### CreateResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| state_proposal | [StateProposal](#StateProposal) |  |  |
-
-
-
-
-
-
 <a name=".EmptyProposalResponse"></a>
 
 ### EmptyProposalResponse
@@ -685,7 +665,6 @@ channel?
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Create | [.CreateRequest](#CreateRequest) | [.CreateResponse](#CreateResponse) | Public |
 | SetFinal | [.StateProposalRequest](#StateProposalRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
 | PendingLiability | [.LiabilityRequest](#LiabilityRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |
 | ExecutedLiability | [.LiabilityRequest](#LiabilityRequest) | [.EmptyProposalResponse](#EmptyProposalResponse) | Public |

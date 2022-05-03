@@ -6,8 +6,6 @@ option go_package = "github.com/openware/state-channels/app/internal/proto";
 
 service StateProposalService {
   // Public
-  rpc Create(CreateRequest) returns (CreateResponse);
-  // Public
   rpc SetFinal(StateProposalRequest) returns (EmptyProposalResponse);
   // Public
   rpc PendingLiability(LiabilityRequest) returns (EmptyProposalResponse);
@@ -22,14 +20,6 @@ service StateProposalService {
 message StateProposal {
   State state = 1;
   bytes liability_state = 2;
-}
-
-message CreateRequest {
-  State state = 1;
-}
-
-message CreateResponse {
-  StateProposal state_proposal = 1;
 }
 
 message LiabilityRequest {
