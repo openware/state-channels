@@ -1,9 +1,6 @@
 syntax = "proto3";
 
 import "init_proposal.proto";
-import "state.proto";
-import "state_proposal.proto";
-
 option go_package = "github.com/openware/state-channels/app/internal/proto";
 
 // channel?
@@ -33,23 +30,17 @@ service ChannelService {
 }
 
 message InitChannelRequest {
-  InitialProposal initial_proposal = 1;
+  bytes initial_proposal = 1;
   uint32 participant_index = 2;
 }
 
-message Channel {
-  InitialProposal initial_proposal = 1;
-  State state = 2;
-  bytes ch = 3; // channel obj
-}
-
 message InitChannelResponse {
-  Channel channel = 1;
+  bytes channel = 1;
 }
 
 message ApproveRequest {
   bytes private_key = 1;
-  Channel channel = 2;
+  bytes channel = 2;
 }
 
 message Signature {
@@ -63,7 +54,7 @@ message ApproveResponse {
 }
 
 message ChannelRequest {
-  Channel channel = 1;
+  bytes channel = 1;
 }
 
 message GasStation {
@@ -75,7 +66,7 @@ message FundChannelRequest {
   Participant participant = 1;
   bytes private_key = 2;
   optional GasStation gas_station = 3;
-  Channel channel = 4;
+  bytes channel = 4;
 }
 
 message FundChannelResponse {
@@ -83,13 +74,13 @@ message FundChannelResponse {
 }
 
 message ProposeResponse {
-  StateProposal state_proposal = 1;
+  bytes state_proposal = 1;
 }
 
 message SignStateRequest {
-  StateProposal state_proposal = 1;
+  bytes state_proposal = 1;
   bytes private_key = 2;
-  Channel channel = 3;
+  bytes channel = 3;
 }
 
 message SignStateResponse {
@@ -101,7 +92,7 @@ message ConcludeRequest {
   bytes private_key = 2;
   map<string, Signature> signatures = 3;
   optional GasStation gas_station = 4;
-  Channel channel = 5;
+  bytes channel = 5;
 }
 
 message ConcludeResponse {
@@ -123,5 +114,17 @@ message BoolResponse {
 message CheckSignatureRequest {
   Signature signature = 1;
   State state = 2;
-  Channel channel = 3;
+  bytes channel = 3;
+}
+
+message State {
+  uint64 chain_id = 1;
+  repeated string participants = 2;
+  int64 channel_nonce = 3;
+  string app_definition = 4;
+  uint64 challenge_duration = 5;
+  bytes app_data = 6;
+  bytes outcome = 7;
+  uint64 turn_num = 8;
+  bool is_final = 9;
 }

@@ -1,6 +1,8 @@
 package protocol
 
 import (
+	"bytes"
+	"encoding/gob"
 	"math/big"
 	"time"
 
@@ -41,4 +43,34 @@ func (ip *InitProposal) AddParticipant(p *Participant) {
 			Destination: p.Destination,
 			Amount:      p.LockedAmount,
 		})
+}
+
+// EncodeToBytes tranform initProposal struct to bytes.
+func (ip *InitProposal) EncodeToBytes() ([]byte, error) {
+	buf := bytes.Buffer{}
+	enc := gob.NewEncoder(&buf)
+
+	err := enc.Encode(ip)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+// DecodeInitProposalFromBytes tranform bytes to initProposal struct.
+func DecodeInitProposalFromBytes(initProposalData []byte) (InitProposal, error) {
+	if len(initProposalData) == 0 {
+		return InitProposal{}, ErrEmptyByteArray
+	}
+
+	buf := bytes.NewBuffer(initProposalData)
+	dec := gob.NewDecoder(buf)
+	var initProposal InitProposal
+
+	if err := dec.Decode(&initProposalData); err != nil {
+		return InitProposal{}, err
+	}
+
+	return initProposal, nil
 }

@@ -7,7 +7,6 @@
     - [ApproveRequest](#.ApproveRequest)
     - [ApproveResponse](#.ApproveResponse)
     - [BoolResponse](#.BoolResponse)
-    - [Channel](#.Channel)
     - [ChannelRequest](#.ChannelRequest)
     - [CheckHoldingsResponse](#.CheckHoldingsResponse)
     - [CheckSignatureRequest](#.CheckSignatureRequest)
@@ -24,27 +23,22 @@
     - [SignStateRequest](#.SignStateRequest)
     - [SignStateResponse](#.SignStateResponse)
     - [Signature](#.Signature)
+    - [State](#.State)
   
     - [ChannelService](#.ChannelService)
   
 - [init_proposal.proto](#init_proposal.proto)
     - [AddParticipantRequest](#.AddParticipantRequest)
-    - [Contract](#.Contract)
     - [CreateProposalRequest](#.CreateProposalRequest)
     - [CreateProposalResponse](#.CreateProposalResponse)
     - [EmptyInitProposalResponse](#.EmptyInitProposalResponse)
-    - [InitialProposal](#.InitialProposal)
     - [Participant](#.Participant)
   
     - [InitProposalService](#.InitProposalService)
   
-- [state.proto](#state.proto)
-    - [State](#.State)
-  
 - [state_proposal.proto](#state_proposal.proto)
     - [EmptyProposalResponse](#.EmptyProposalResponse)
     - [LiabilityRequest](#.LiabilityRequest)
-    - [StateProposal](#.StateProposal)
     - [StateProposalRequest](#.StateProposalRequest)
   
     - [StateProposalService](#.StateProposalService)
@@ -69,7 +63,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | private_key | [bytes](#bytes) |  |  |
-| channel | [Channel](#Channel) |  |  |
+| channel | [bytes](#bytes) |  |  |
 
 
 
@@ -106,23 +100,6 @@
 
 
 
-<a name=".Channel"></a>
-
-### Channel
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| initial_proposal | [InitialProposal](#InitialProposal) |  |  |
-| state | [State](#State) |  |  |
-| ch | [bytes](#bytes) |  | channel obj |
-
-
-
-
-
-
 <a name=".ChannelRequest"></a>
 
 ### ChannelRequest
@@ -131,7 +108,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| channel | [Channel](#Channel) |  |  |
+| channel | [bytes](#bytes) |  |  |
 
 
 
@@ -163,7 +140,7 @@
 | ----- | ---- | ----- | ----------- |
 | signature | [Signature](#Signature) |  |  |
 | state | [State](#State) |  |  |
-| channel | [Channel](#Channel) |  |  |
+| channel | [bytes](#bytes) |  |  |
 
 
 
@@ -182,7 +159,7 @@
 | private_key | [bytes](#bytes) |  |  |
 | signatures | [ConcludeRequest.SignaturesEntry](#ConcludeRequest.SignaturesEntry) | repeated |  |
 | gas_station | [GasStation](#GasStation) | optional |  |
-| channel | [Channel](#Channel) |  |  |
+| channel | [bytes](#bytes) |  |  |
 
 
 
@@ -246,7 +223,7 @@
 | participant | [Participant](#Participant) |  |  |
 | private_key | [bytes](#bytes) |  |  |
 | gas_station | [GasStation](#GasStation) | optional |  |
-| channel | [Channel](#Channel) |  |  |
+| channel | [bytes](#bytes) |  |  |
 
 
 
@@ -292,7 +269,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| initial_proposal | [InitialProposal](#InitialProposal) |  |  |
+| initial_proposal | [bytes](#bytes) |  |  |
 | participant_index | [uint32](#uint32) |  |  |
 
 
@@ -308,7 +285,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| channel | [Channel](#Channel) |  |  |
+| channel | [bytes](#bytes) |  |  |
 
 
 
@@ -323,7 +300,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| state_proposal | [StateProposal](#StateProposal) |  |  |
+| state_proposal | [bytes](#bytes) |  |  |
 
 
 
@@ -338,9 +315,9 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| state_proposal | [StateProposal](#StateProposal) |  |  |
+| state_proposal | [bytes](#bytes) |  |  |
 | private_key | [bytes](#bytes) |  |  |
-| channel | [Channel](#Channel) |  |  |
+| channel | [bytes](#bytes) |  |  |
 
 
 
@@ -373,6 +350,29 @@
 | r | [bytes](#bytes) |  |  |
 | s | [bytes](#bytes) |  |  |
 | v | [bytes](#bytes) |  |  |
+
+
+
+
+
+
+<a name=".State"></a>
+
+### State
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| chain_id | [uint64](#uint64) |  |  |
+| participants | [string](#string) | repeated |  |
+| channel_nonce | [int64](#int64) |  |  |
+| app_definition | [string](#string) |  |  |
+| challenge_duration | [uint64](#uint64) |  |  |
+| app_data | [bytes](#bytes) |  |  |
+| outcome | [bytes](#bytes) |  |  |
+| turn_num | [uint64](#uint64) |  |  |
+| is_final | [bool](#bool) |  |  |
 
 
 
@@ -424,23 +424,7 @@ channel?
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | participant | [Participant](#Participant) |  |  |
-| initial_proposal | [InitialProposal](#InitialProposal) |  |  |
-
-
-
-
-
-
-<a name=".Contract"></a>
-
-### Contract
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| nitro_client | [bytes](#bytes) |  |  |
-| asset_address | [string](#string) |  |  |
+| initial_proposal | [bytes](#bytes) |  |  |
 
 
 
@@ -473,7 +457,7 @@ channel?
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| initial_proposal | [InitialProposal](#InitialProposal) |  |  |
+| initial_proposal | [bytes](#bytes) |  |  |
 
 
 
@@ -484,24 +468,6 @@ channel?
 
 ### EmptyInitProposalResponse
 
-
-
-
-
-
-
-<a name=".InitialProposal"></a>
-
-### InitialProposal
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| participants | [Participant](#Participant) | repeated |  |
-| state | [State](#State) |  |  |
-| contract | [Contract](#Contract) |  |  |
-| channel_nonce | [int64](#int64) |  |  |
 
 
 
@@ -546,45 +512,6 @@ channel?
 
 
 
-<a name="state.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## state.proto
-
-
-
-<a name=".State"></a>
-
-### State
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| chain_id | [uint64](#uint64) |  |  |
-| participants | [string](#string) | repeated |  |
-| channel_nonce | [int64](#int64) |  |  |
-| app_definition | [string](#string) |  |  |
-| challenge_duration | [uint64](#uint64) |  |  |
-| app_data | [bytes](#bytes) |  |  |
-| outcome | [bytes](#bytes) |  |  |
-| turn_num | [uint64](#uint64) |  |  |
-| is_final | [bool](#bool) |  |  |
-
-
-
-
-
- 
-
- 
-
- 
-
- 
-
-
-
 <a name="state_proposal.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -614,23 +541,7 @@ channel?
 | to | [uint64](#uint64) |  |  |
 | asset | [string](#string) |  |  |
 | amount | [string](#string) |  |  |
-| state_proposal | [StateProposal](#StateProposal) |  |  |
-
-
-
-
-
-
-<a name=".StateProposal"></a>
-
-### StateProposal
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| state | [State](#State) |  |  |
-| liability_state | [bytes](#bytes) |  |  |
+| state_proposal | [bytes](#bytes) |  |  |
 
 
 
@@ -645,7 +556,7 @@ channel?
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| state_proposal | [StateProposal](#StateProposal) |  |  |
+| state_proposal | [bytes](#bytes) |  |  |
 
 
 

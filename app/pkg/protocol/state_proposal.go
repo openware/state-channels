@@ -2,12 +2,16 @@ package protocol
 
 import (
 	"app/internal/liability"
+	"bytes"
+	"encoding/gob"
 	"errors"
 
 	"github.com/shopspring/decimal"
 	st "github.com/statechannels/go-nitro/channel/state"
 	"github.com/statechannels/go-nitro/types"
 )
+
+var ErrEmptyByteArray = errors.New("empty byte array")
 
 // StateProposal represents information about proposed state.
 type StateProposal struct {
@@ -55,14 +59,6 @@ func (sp *StateProposal) SetAppData(appData []byte) {
 	sp.state.AppData = appData
 }
 
-func (sp *StateProposal) SetState(state *st.State) {
-	sp.state = state
-}
-
-func (sp *StateProposal) SetLiabilitiesState(liability liability.LiabilitiesState) {
-	sp.liabilitiesState = liability
-}
-
 // LiabilityState returns proposed state liability.
 func (sp *StateProposal) LiabilityState() liability.LiabilitiesState {
 	return sp.liabilitiesState
@@ -98,4 +94,34 @@ func (sp *StateProposal) ApproveLiabilities() error {
 	sp.state.AppData = appDataBytes
 
 	return nil
+}
+
+// EncodeToBytes tranform stateProposal struct to bytes.
+func (sp *StateProposal) EncodeToBytes() ([]byte, error) {
+	buf := bytes.Buffer{}
+	enc := gob.NewEncoder(&buf)
+
+	err := enc.Encode(sp)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+// DecodeStateProposalFromBytes tranform bytes to stateProposal struct.
+func DecodeStateProposalFromBytes(stateProposalData []byte) (StateProposal, error) {
+	if len(stateProposalData) == 0 {
+		return StateProposal{}, ErrEmptyByteArray
+	}
+
+	buf := bytes.NewBuffer(stateProposalData)
+	dec := gob.NewDecoder(buf)
+	var stateProposal StateProposal
+
+	if err := dec.Decode(&stateProposalData); err != nil {
+		return StateProposal{}, err
+	}
+
+	return stateProposal, nil
 }

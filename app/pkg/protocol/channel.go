@@ -2,6 +2,8 @@ package protocol
 
 import (
 	"app/pkg/eth/gasprice"
+	"bytes"
+	"encoding/gob"
 	"errors"
 	"math/big"
 
@@ -232,6 +234,36 @@ func (channel *Channel) CheckHoldings() (*big.Int, error) {
 // StateIsFinal returns true if current state is final, false otherwise.
 func (channel *Channel) StateIsFinal() bool {
 	return channel.lastState.IsFinal
+}
+
+// EncodeToBytes tranform Channel struct to bytes.
+func (channel *Channel) EncodeToBytes() ([]byte, error) {
+	buf := bytes.Buffer{}
+	enc := gob.NewEncoder(&buf)
+
+	err := enc.Encode(channel)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+// DecodeChannelFromBytes tranform bytes to Channel struct.
+func DecodeChannelFromBytes(channelData []byte) (Channel, error) {
+	if len(channelData) == 0 {
+		return Channel{}, ErrEmptyByteArray
+	}
+
+	buf := bytes.NewBuffer(channelData)
+	dec := gob.NewDecoder(buf)
+	var channel Channel
+
+	if err := dec.Decode(&channelData); err != nil {
+		return Channel{}, err
+	}
+
+	return channel, nil
 }
 
 // signState adds a participant's signature to the newState.

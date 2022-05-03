@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "state.proto";
-
 option go_package = "github.com/openware/state-channels/app/internal/proto";
 
 service StateProposalService {
@@ -17,21 +15,16 @@ service StateProposalService {
   rpc ApproveLiabilities(StateProposalRequest) returns (EmptyProposalResponse);
 }
 
-message StateProposal {
-  State state = 1;
-  bytes liability_state = 2;
-}
-
 message LiabilityRequest {
   uint64 from = 1;
   uint64 to = 2;
   string asset = 3;
   string amount = 4;
-  StateProposal state_proposal = 5;
+  bytes state_proposal = 5;
 }
 
 message StateProposalRequest {
-  StateProposal state_proposal = 1;
+  bytes state_proposal = 1;
 }
 
 message EmptyProposalResponse {

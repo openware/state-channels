@@ -27,12 +27,12 @@ func Init(ctx context.Context, req proto.InitChannelRequest) (*proto.InitChannel
 		return &proto.InitChannelResponse{}, nil
 	}
 
-	protoChannel, err := toProtoChannel(channel)
+	channelBytes, err := channel.EncodeToBytes()
 	if err != nil {
 		return &proto.InitChannelResponse{}, nil
 	}
 
-	return &proto.InitChannelResponse{Channel: protoChannel}, nil
+	return &proto.InitChannelResponse{Channel: channelBytes}, nil
 }
 
 func ApproveInit(ctx context.Context, req proto.ApproveRequest) (*proto.ApproveResponse, error) {
@@ -46,6 +46,7 @@ func ApproveInit(ctx context.Context, req proto.ApproveRequest) (*proto.ApproveR
 		return &proto.ApproveResponse{}, nil
 	}
 
+	// TODO
 	protoSignature := toProtoSignature(signature)
 
 	return &proto.ApproveResponse{Signature: protoSignature}, nil
@@ -93,12 +94,12 @@ func ProposeState(ctx context.Context, req proto.ChannelRequest) (*proto.Propose
 		return &proto.ProposeResponse{}, nil
 	}
 
-	protoStateProposal, err := toProtoStateProposal(stateProposal)
+	stateProposalBytes, err := stateProposal.EncodeToBytes()
 	if err != nil {
 		return &proto.ProposeResponse{}, nil
 	}
 
-	return &proto.ProposeResponse{StateProposal: protoStateProposal}, nil
+	return &proto.ProposeResponse{StateProposal: stateProposalBytes}, nil
 }
 
 func SignState(ctx context.Context, req proto.SignStateRequest) (*proto.SignStateResponse, error) {

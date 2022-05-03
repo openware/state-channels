@@ -1,9 +1,7 @@
 package grpc
 
 import (
-	"app/internal/liability"
 	"app/internal/proto"
-	"app/pkg/nitro"
 	"app/pkg/protocol"
 	"math/big"
 
@@ -12,9 +10,6 @@ import (
 	st "github.com/statechannels/go-nitro/channel/state"
 	"github.com/statechannels/go-nitro/types"
 )
-
-// TODO
-// return errors where needed
 
 func fromProtoParticipant(participant *proto.Participant) *protocol.Participant {
 	return &protocol.Participant{
@@ -34,64 +29,10 @@ func toProtoParticipant(participant *protocol.Participant) *proto.Participant {
 	}
 }
 
-func fromProtoContract(contract *proto.Contract) (*protocol.Contract, error) {
-	client, err := nitro.DecodeFromBytes(contract.NitroClient)
-	if err != nil {
-		return &protocol.Contract{}, err
-	}
-
-	c := protocol.Contract{
-		Client:       client,
-		AssetAddress: common.HexToAddress(contract.AssetAddress),
-	}
-
-	return &c, nil
-}
-
-func toProtoContract(contract *protocol.Contract) (*proto.Contract, error) {
-	client, err := contract.Client.EncodeToBytes()
-	if err != nil {
-		return &proto.Contract{}, nil
-	}
-
-	c := proto.Contract{
-		AssetAddress: contract.AssetAddress.String(),
-		NitroClient:  client,
-	}
-
-	return &c, nil
-}
-
-func fromProtoStateProposal(stateProposal *proto.StateProposal) (*protocol.StateProposal, error) {
-	state := fromProtoState(stateProposal.State)
-	liabilityStateBytes := stateProposal.LiabilityState
-	liabilityState, err := liability.DecodeFromBytes(liabilityStateBytes)
+func fromProtoStateProposal(data []byte) (*protocol.StateProposal, error) {
+	sp, err := protocol.DecodeStateProposalFromBytes(data)
 	if err != nil {
 		return &protocol.StateProposal{}, nil
-	}
-
-	sp := protocol.StateProposal{}
-	sp.SetState(state)
-	sp.SetLiabilitiesState(liabilityState)
-
-	return &sp, nil
-}
-
-func toProtoStateProposal(stateProposal *protocol.StateProposal) (*proto.StateProposal, error) {
-	state := stateProposal.State()
-	protoState, err := toProtoState(&state)
-	if err != nil {
-		return &proto.StateProposal{}, nil
-	}
-
-	liabilityState, err := stateProposal.LiabilityState().EncodeToBytes()
-	if err != nil {
-		return &proto.StateProposal{}, nil
-	}
-
-	sp := proto.StateProposal{
-		State:          protoState,
-		LiabilityState: liabilityState,
 	}
 
 	return &sp, nil
@@ -143,55 +84,13 @@ func toProtoState(state *st.State) (*proto.State, error) {
 	return &s, nil
 }
 
-func fromProtoInitialProposal(ip *proto.InitialProposal) (*protocol.InitProposal, error) {
-	contract, err := fromProtoContract(ip.Contract)
+func fromProtoInitialProposal(data []byte) (*protocol.InitProposal, error) {
+	ip, err := protocol.DecodeInitProposalFromBytes(data)
 	if err != nil {
 		return &protocol.InitProposal{}, err
 	}
 
-	var participants []*protocol.Participant
-	for _, p := range ip.Participants {
-		protocolParticipant := fromProtoParticipant(p)
-		participants = append(participants, protocolParticipant)
-	}
-
-	state := fromProtoState(ip.State)
-
-	proposal := protocol.InitProposal{
-		ChannelNonce: big.NewInt(ip.ChannelNonce),
-		Contract:     contract,
-		Participants: participants,
-		State:        state,
-	}
-
-	return &proposal, nil
-}
-
-func toProtoInitialProposal(ip *protocol.InitProposal) (*proto.InitialProposal, error) {
-	contract, err := toProtoContract(ip.Contract)
-	if err != nil {
-		return &proto.InitialProposal{}, err
-	}
-
-	participants := []*proto.Participant{}
-	for _, p := range ip.Participants {
-		protoParticipant := toProtoParticipant(p)
-		participants = append(participants, protoParticipant)
-	}
-
-	state, err := toProtoState(ip.State)
-	if err != nil {
-		return &proto.InitialProposal{}, err
-	}
-
-	prop := proto.InitialProposal{
-		ChannelNonce: ip.ChannelNonce.Int64(),
-		Contract:     contract,
-		Participants: participants,
-		State:        state,
-	}
-
-	return &prop, nil
+	return &ip, nil
 }
 
 func toProtoSignature(signature state.Signature) *proto.Signature {
@@ -214,14 +113,11 @@ func fromProtoSignature(signature *proto.Signature) state.Signature {
 	return sig
 }
 
-func fromProtoChannel(channel *proto.Channel) (*protocol.Channel, error) {
-	ch := protocol.Channel{}
-
-	return &ch, nil
-}
-
-func toProtoChannel(channel *protocol.Channel) (*proto.Channel, error) {
-	ch := proto.Channel{}
+func fromProtoChannel(data []byte) (*protocol.Channel, error) {
+	ch, err := protocol.DecodeChannelFromBytes(data)
+	if err != nil {
+		return &protocol.Channel{}, err
+	}
 
 	return &ch, nil
 }

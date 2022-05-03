@@ -30,7 +30,7 @@ func (svc *InitProposalService) Create(ctx context.Context, req *proto.CreatePro
 	contract := protocol.NewContract(nitroClient, common.HexToAddress(req.AssetAddress))
 	proposal := protocol.NewInitProposal(participant, contract)
 
-	initProposal, err := toProtoInitialProposal(proposal)
+	initProposal, err := proposal.EncodeToBytes()
 	if err != nil {
 		return &proto.CreateProposalResponse{}, err
 	}
@@ -40,15 +40,13 @@ func (svc *InitProposalService) Create(ctx context.Context, req *proto.CreatePro
 	}, nil
 }
 
-// bytes as initial proposal
 func (svc *InitProposalService) AddParticipant(ctx context.Context, req *proto.AddParticipantRequest) error {
-	participant := fromProtoParticipant(req.Participant)
-
 	initialProposal, err := fromProtoInitialProposal(req.InitialProposal)
 	if err != nil {
 		return err
 	}
 
+	participant := fromProtoParticipant(req.Participant)
 	initialProposal.AddParticipant(participant)
 
 	return nil
