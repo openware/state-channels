@@ -1,0 +1,38 @@
+<mxfile host="65bd71144e" scale="2" border="200">
+    <diagram id="aud9nikIYE2zuOSdvOYu" name="Page-1">
+        <mxGraphModel dx="430" dy="313" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="DeployedContract" style="rounded=1;whiteSpace=wrap;html=1;arcSize=3;strokeWidth=2;strokeColor=#0000FF;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="80" width="120" height="39" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Contract" style="rounded=1;whiteSpace=wrap;html=1;arcSize=3;" vertex="1" parent="1">
+                    <mxGeometry x="280" y="200" width="120" height="39" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" style="edgeStyle=none;html=1;dashed=1;" edge="1" parent="1" source="4" target="3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Imported by" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="7">
+                    <mxGeometry x="-0.1102" y="-1" relative="1" as="geometry">
+                        <mxPoint x="-2" y="5" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="4" value="Library" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;strokeColor=#999999;dashed=1;dashPattern=1 2;" vertex="1" parent="1">
+                    <mxGeometry x="360" y="80" width="120" height="39" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="5" target="3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="Inherited by" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="6">
+                    <mxGeometry x="-0.0987" relative="1" as="geometry">
+                        <mxPoint x="3" y="4" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="5" value="Interface" style="rounded=1;whiteSpace=wrap;html=1;arcSize=3;dashed=1;strokeColor=#FFB366;" vertex="1" parent="1">
+                    <mxGeometry x="200" y="80" width="120" height="39" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
