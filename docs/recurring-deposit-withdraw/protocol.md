@@ -74,7 +74,7 @@ event AllocationUpdated(
 
 While studying the protocol thoroughly, we made a cheat-sheet for all structures taking part in it:
 
-![Protocol structures](./img/statechannels-structures.png)
+![Protocol structures](../img/statechannels-structures.png)
 
 ## Solved attack vectors in the original protocol
 
